@@ -1,0 +1,11 @@
+export type BadRequestType = 'GENERAL'
+export type NotFoundType = 'GENERAL'
+export type ServerErrorType = 'GENERAL'
+export type AuthErrorType =
+    | 'MISSING_ACCESS_TOKEN'
+    | 'INVALID_ACCESS_TOKEN'
+    | 'INVALID_REFRESH_TOKEN'
+    | 'PASSWORD_NOT_MATCHED'
+    | 'RESOURCE_ACCESS_DENIED'
+export type UserErrorType = 'NOT_FOUND'
+export type PostErrorType = 'NOT_FOUND'

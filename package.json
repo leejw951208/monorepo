@@ -10,7 +10,8 @@
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "nest start",
         "start:local": "nest start --watch",
-        "start:dev": "nest start --watch",
+        "start:dev:api": "NODE_ENV=dev node dist/apps/api/main",
+        "start:dev:admin": "NODE_ENV=dev node dist/apps/admin/main",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/apps/monorepo/main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -24,11 +25,22 @@
         "@nestjs/common": "^11.0.1",
         "@nestjs/config": "^4.0.2",
         "@nestjs/core": "^11.0.1",
+        "@nestjs/jwt": "^11.0.0",
+        "@nestjs/passport": "^11.0.5",
         "@nestjs/platform-express": "^11.0.1",
+        "@nestjs/swagger": "^11.2.0",
         "@prisma/client": "^6.13.0",
         "bcrypt": "^6.0.0",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.2",
+        "nest-winston": "^1.10.2",
+        "nestjs-cls": "^6.0.1",
+        "passport-jwt": "^4.0.1",
+        "passport-local": "^1.0.0",
         "reflect-metadata": "^0.2.2",
-        "rxjs": "^7.8.1"
+        "rxjs": "^7.8.1",
+        "winston": "^3.17.0",
+        "winston-daily-rotate-file": "^5.0.0"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",
@@ -80,6 +92,8 @@
         "moduleNameMapper": {
             "^@app/models(|/.*)$": "<rootDir>/libs/models/src/$1",
             "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1",
+            "^libs/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
+            "^libs/common(|/.*)$": "<rootDir>/libs/common/src/$1",
             "^libs/db(|/.*)$": "<rootDir>/libs/db/src/$1",
             "^libs/domains(|/.*)$": "<rootDir>/libs/domains/src/$1",
             "^libs/models(|/.*)$": "<rootDir>/libs/models/src/$1"
