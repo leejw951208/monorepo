@@ -1,20 +1,47 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { UserModule } from 'apps/api/src/user/user.module';
-import { ApiController } from './api.controller';
-import { ApiService } from './api.service';
-import { PrismaModule } from '@libs/db/prisma.module';
+import { winstonModuleAsyncOptions } from '@libs/common/config/winston.config'
+import { JwtGuard } from '@libs/common/guard/jwt.guard'
+import { CustomClsMiddleware } from '@libs/common/middleware/cls.middleware'
+import { LoggerMiddleware } from '@libs/common/middleware/logger.middleware'
+import { DbModule } from '@libs/db/db.module'
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import { APP_GUARD } from '@nestjs/core'
+import { UserModule } from 'apps/api/src/user/user.module'
+import { WinstonModule } from 'nest-winston'
+import { ClsModule } from 'nestjs-cls'
+import * as path from 'path'
+import { ApiController } from './api.controller'
+import { ApiService } from './api.service'
+import { AuthModule } from './auth/auth.module'
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            load: [],
+            envFilePath: [
+                path.resolve(process.cwd(), `./envs/.env.${process.env.NODE_ENV}`), // 공통
+                path.resolve(process.cwd(), `./apps/api/envs/.env.${process.env.NODE_ENV}`) // 앱 전용
+            ],
+            load: []
         }),
-        PrismaModule,
-        UserModule,
+        ClsModule.forRoot({
+            global: true,
+            middleware: { mount: false }
+        }),
+        WinstonModule.forRootAsync(winstonModuleAsyncOptions),
+        DbModule,
+        AuthModule,
+        UserModule
     ],
     controllers: [ApiController],
-    providers: [ApiService],
+    providers: [ApiService, { provide: APP_GUARD, useClass: JwtGuard }]
 })
-export class ApiModule {}
+export class ApiModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(LoggerMiddleware)
+            .forRoutes({ path: '*splat', method: RequestMethod.ALL })
+            .apply(CustomClsMiddleware)
+            .forRoutes({ path: '*splat', method: RequestMethod.ALL })
+    }
+}

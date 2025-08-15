@@ -22,15 +22,11 @@
         "strictBindCallApply": false,
         "noFallthroughCasesInSwitch": false,
         "paths": {
-            "@libs/db": ["libs/db"],
+            "@libs/auth/*": ["apps/api/src/auth/*"],
+            "@libs/common/*": ["libs/common/src/*"],
             "@libs/db/*": ["libs/db/src/*"],
             "@libs/db/prisma/*": ["libs/db/prisma/*"],
-            "@libs/models": ["libs/models/src"],
-            "@libs/models/*": ["libs/models/src/*"],
-            "@libs/auth": ["libs/auth/src"],
-            "@libs/auth/*": ["libs/auth/src/*"],
-            "@libs/common": ["libs/common/src"],
-            "@libs/common/*": ["libs/common/src/*"]
+            "@libs/models/*": ["libs/models/src/*"]
         }
     }
 }
