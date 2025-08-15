@@ -8,7 +8,7 @@ import { stdin, stdout } from 'node:process'
 
 async function main() {
     // 환경 입력
-    const schemaPath = `${path.resolve(process.cwd())}/libs/db/src/prisma`
+    const schemaPath = `${path.resolve(process.cwd())}/libs/db/prisma`
     const rl = readline.createInterface({ input: stdin, output: stdout })
     const env = (await rl.question('환경 (local/dev): ')).trim()
     rl.close()

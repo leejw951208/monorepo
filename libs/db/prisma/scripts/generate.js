@@ -8,7 +8,7 @@ import { stdin, stdout } from 'node:process'
 
 async function main() {
     // 1) 사용자에게 환경(prompt)과 파일명(prompt) 입력받기
-    const schemaPath = `${path.resolve(process.cwd())}/libs/db/src/prisma`
+    const schemaPath = `${path.resolve(process.cwd())}/libs/db/prisma`
 
     const rl = readline.createInterface({ input: stdin, output: stdout })
     const env = (await rl.question('환경 (local/dev): ')).trim()
