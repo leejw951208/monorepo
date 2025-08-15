@@ -15,12 +15,12 @@ export const dailyOptions = (level: string, logDir: string) => {
         maxFiles: '14d',
         format: winston.format.combine(
             winston.format.timestamp(),
-            utilities.format.nestLike('NestJS-Sample', {
+            utilities.format.nestLike(undefined, {
                 colors: false,
                 prettyPrint: true,
-                appName: true,
-            }),
-        ),
+                appName: true
+            })
+        )
     }
 }
 
@@ -35,12 +35,12 @@ export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
         const consoleOptions: ConsoleTransportOptions = {
             format: winston.format.combine(
                 winston.format.timestamp(),
-                utilities.format.nestLike('NestJS-Sample', {
+                utilities.format.nestLike(undefined, {
                     colors: true,
                     prettyPrint: true,
-                    appName: true,
-                }),
-            ),
+                    appName: true
+                })
+            )
         }
 
         return {
@@ -59,14 +59,14 @@ export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
                             return info
                         })(),
                         winston.format.timestamp(),
-                        utilities.format.nestLike('NestJS-Sample', {
+                        utilities.format.nestLike(undefined, {
                             colors: false,
                             prettyPrint: true,
-                            appName: true,
-                        }),
-                    ),
-                }),
-            ],
+                            appName: true
+                        })
+                    )
+                })
+            ]
         }
-    },
+    }
 }
