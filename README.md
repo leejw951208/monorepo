@@ -27,6 +27,24 @@ yarn db:migrate
 ### 4. 애플리케이션 실행
 
 ```bash
-# app = api | admin
-yarn start:local {app}
+# APP = api | admin
+yarn start:local {APP}
 ```
+
+### 5. Docker 실행
+
+```bash
+# 전체 애플리케이션 실행
+# --build: 도커 이미지 새로 빌드
+docker compose up -d --build
+
+# 특정 애플리케이션 실행
+# APP = api | admin
+docker compose up -d {APP} --build
+```
+
+## 📚 API 문서
+
+- **Swagger UI**:
+    - `http://localhost:3000/api/v1/docs`
+    - `http://localhost:3000/admin/v1/docs`
