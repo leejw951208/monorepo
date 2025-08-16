@@ -1,7 +1,7 @@
-import { DbCommon } from '@libs/db/db.common'
+import { CommonModel } from '@libs/common/db/common.model'
 import { Token } from '@prisma/client'
 
-export class TokenModel extends DbCommon implements Token {
+export class TokenModel extends CommonModel implements Token {
     userId: number
     refreshToken: string
 

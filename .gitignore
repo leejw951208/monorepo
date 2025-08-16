@@ -40,6 +40,8 @@ envs/*
 !envs/.env.example
 apps/api/envs/*
 !apps/api/envs/.env.example
+apps/admin/envs/*
+!apps/admin/envs/.env.example
 
 # temp directory
 .temp

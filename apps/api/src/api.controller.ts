@@ -4,4 +4,11 @@ import { ApiService } from './api.service'
 @Controller()
 export class ApiController {
     constructor(private readonly apiService: ApiService) {}
+
+    @Get('health')
+    health() {
+        return {
+            status: 'ok'
+        }
+    }
 }
