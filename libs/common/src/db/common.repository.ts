@@ -1,18 +1,13 @@
-import { DbCommon } from '@libs/db/db.common'
+import { CommonModel } from '@libs/common/db/common.model'
 import { DbService } from '@libs/db/db.service'
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { ClsService } from 'nestjs-cls'
 
 type Tx = Prisma.TransactionClient
-type TxOptions = {
-    isolationLevel?: Prisma.TransactionIsolationLevel
-    timeout?: number // ms
-    maxWait?: number // ms
-}
 
 @Injectable()
-export class CommonRepository<T extends DbCommon> {
+export class CommonRepository<T extends CommonModel> {
     private readonly model: Prisma.ModelName
     private readonly delegate?: any
 

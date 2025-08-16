@@ -1,4 +1,4 @@
-export class DbCommon {
+export class CommonModel {
     id: number
     createdAt: Date
     createdBy: number

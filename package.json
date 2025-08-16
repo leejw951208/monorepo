@@ -8,12 +8,7 @@
     "scripts": {
         "build": "nest build",
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
-        "start": "nest start",
-        "start:local": "NODE_ENV=local nest start --watch",
-        "start:dev:api": "NODE_ENV=dev node dist/apps/api/main",
-        "start:dev:admin": "NODE_ENV=dev node dist/apps/admin/main",
-        "start:prod:api": "NODE_ENV=prod node dist/apps/api/main",
-        "start:prod:admin": "NODE_ENV=prod node dist/apps/admin/main",
+        "start": "NODE_ENV=local nest start --watch",
         "start:debug": "nest start --debug --watch",
         "db:generate": "node libs/db/prisma/scripts/generate.js",
         "db:migrate": "node libs/db/prisma/scripts/migrate.js",
