@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { ClsService } from 'nestjs-cls'
 
-const findOperations = ['findFirst', 'findFirstOrThrow', 'findMany', 'count'] as const
+const findOperations = ['findFirst', 'findFirstOrThrow', 'findMany', 'count', 'aggregate', 'groupBy'] as const
 type FindOperation = (typeof findOperations)[number]
 
 export const filterSoftDeleted = Prisma.defineExtension({
@@ -9,19 +9,16 @@ export const filterSoftDeleted = Prisma.defineExtension({
     query: {
         $allModels: {
             async $allOperations({ operation, args, query }) {
-                // 커스텀 옵션으로 soft delete 필터링 무시
-                if ((args as any).withDeleted) {
-                    delete (args as any).withDeleted
+                const hasWithDeleted = 'withDeleted' in args
+                if (hasWithDeleted) {
+                    delete args.withDeleted
                     return query(args)
                 }
                 if (findOperations.includes(operation as FindOperation)) {
-                    // args에 where가 없거나 falsy
                     if (!('where' in args) || !args.where) {
-                        ;(args as any).where = { isDeleted: false }
+                        args['where'] = { isDeleted: false }
                     } else {
-                        ;(args as any).where = {
-                            AND: [args.where, { isDeleted: false }]
-                        }
+                        args.where = { AND: [args.where as any, { isDeleted: false }] }
                     }
                 }
                 return query(args)
@@ -78,14 +75,14 @@ export const softDelete = (clsService: ClsService) =>
         name: 'softDelete',
         model: {
             $allModels: {
-                async delete<T>(this: T, where: Prisma.Args<T, 'delete'>['where']) {
+                async softDelete<T>(this: T, where: Prisma.Args<T, 'delete'>['where']) {
                     const context = Prisma.getExtensionContext(this)
                     return await (context as any).update({
                         ...where,
                         data: { isDeleted: true, deletedBy: clsService.get('userId'), deletedAt: new Date() }
                     })
                 },
-                async deleteMany<T>(this: T, where: Prisma.Args<T, 'deleteMany'>['where']) {
+                async softDeleteMany<T>(this: T, where: Prisma.Args<T, 'deleteMany'>['where']) {
                     const context = Prisma.getExtensionContext(this)
                     return await (context as any).updateMany({
                         ...where,

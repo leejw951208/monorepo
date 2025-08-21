@@ -22,7 +22,7 @@
         "strictBindCallApply": false,
         "noFallthroughCasesInSwitch": false,
         "paths": {
-            "@libs/auth/*": ["apps/api/src/auth/*"],
+            "@apps/api/*": ["apps/api/src/*"],
             "@libs/common/*": ["libs/common/src/*"],
             "@libs/db/*": ["libs/db/src/*"],
             "@libs/db/prisma/*": ["libs/db/prisma/*"],
