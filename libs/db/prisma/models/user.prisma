@@ -4,20 +4,20 @@ enum UserStatus {
 }
 
 model User {
-    id        BigInt     @id @default(autoincrement()) @db.BigInt
+    id        Int        @id @default(autoincrement())
+    tokens    Token[]
+    roles     UserRole[]
     email     String     @unique
     password  String
     name      String
     status    UserStatus @default(ACTIVE)
-    posts     Post[]
-    tokens    Token[]
     createdAt DateTime   @default(now()) @map("created_at")
-    createdBy BigInt     @map("created_by") @db.BigInt
+    createdBy Int        @map("created_by")
     updatedAt DateTime?  @updatedAt @map("updated_at")
-    updatedBy BigInt?    @map("updated_by") @db.BigInt
+    updatedBy Int?       @map("updated_by")
     isDeleted Boolean?   @default(false) @map("is_deleted")
     deletedAt DateTime?  @map("deleted_at")
-    deletedBy BigInt?    @map("deleted_by") @db.BigInt
+    deletedBy Int?       @map("deleted_by")
 
-    @@map("users")
+    @@map("user")
 }

@@ -13,6 +13,7 @@ import * as path from 'path'
 import { ApiController } from './api.controller'
 import { ApiService } from './api.service'
 import { AuthModule } from './auth/auth.module'
+import { PermissionModule } from './system/permission/permission.module';
 
 @Module({
     imports: [
@@ -31,7 +32,8 @@ import { AuthModule } from './auth/auth.module'
         WinstonModule.forRootAsync(winstonModuleAsyncOptions),
         DbModule,
         AuthModule,
-        UserModule
+        UserModule,
+        PermissionModule
     ],
     controllers: [ApiController],
     providers: [ApiService, { provide: APP_GUARD, useClass: JwtGuard }]

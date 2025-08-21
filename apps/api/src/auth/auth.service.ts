@@ -1,9 +1,10 @@
-import { SigninResponseDto } from '@libs/auth/dto/signin-response.dto'
-import { SignupRequestDto } from '@libs/auth/dto/signup-request.dto'
+import { SigninResponseDto } from '@apps/api/auth/dto/signin-response.dto'
+import { SignupRequestDto } from '@apps/api/auth/dto/signup-request.dto'
 import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR, USER_ERROR } from '@libs/common/exception/error.code'
 import { BcryptUtil } from '@libs/common/utils/bcrypt.util'
 import { JwtUtil } from '@libs/common/utils/jwt.util'
+import { DbService } from '@libs/db/db.service'
 import { TokenModel } from '@libs/models/token/token.model'
 import { TokenRepository } from '@libs/models/token/token.repository'
 import { UserModel } from '@libs/models/user/user.model'
@@ -27,7 +28,7 @@ export class AuthService {
             email: reqDto.email,
             password: hashedPassword,
             name: reqDto.name,
-            status: UserStatus.ACTIVATED
+            status: UserStatus.ACTIVE
         })
         await this.userRepository.insert(createdUser)
     }
