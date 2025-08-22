@@ -1,7 +1,7 @@
-import { CommonModel } from '@libs/common/db/common.model'
+import { BaseModel } from '@libs/models/base/base.model'
 import { Token } from '@prisma/client'
 
-export class TokenModel extends CommonModel implements Token {
+export class TokenModel extends BaseModel implements Token {
     userId: number
     refreshToken: string
 

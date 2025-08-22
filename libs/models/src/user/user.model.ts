@@ -1,7 +1,7 @@
-import { CommonModel } from '@libs/common/db/common.model'
+import { BaseModel } from '@libs/models/base/base.model'
 import { User, UserStatus } from '@prisma/client'
 
-export class UserModel extends CommonModel implements User {
+export class UserModel extends BaseModel implements User {
     name: string
     email: string
     password: string

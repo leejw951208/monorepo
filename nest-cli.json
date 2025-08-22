@@ -34,13 +34,13 @@
                 "tsConfigPath": "libs/common/tsconfig.lib.json"
             }
         },
-        "db": {
+        "db/prisma": {
             "type": "library",
-            "root": "libs/db",
+            "root": "libs/db/prisma",
             "entryFile": "index",
-            "sourceRoot": "libs/db/src",
+            "sourceRoot": "libs/db/prisma/src",
             "compilerOptions": {
-                "tsConfigPath": "libs/db/tsconfig.lib.json"
+                "tsConfigPath": "libs/db/prisma/tsconfig.lib.json"
             }
         },
         "models": {

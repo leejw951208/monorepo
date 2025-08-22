@@ -10,10 +10,10 @@
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "NODE_ENV=local nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "db:generate": "node libs/db/prisma/scripts/generate.js",
-        "db:migrate": "node libs/db/prisma/scripts/migrate.js",
-        "db:reset": "node libs/db/prisma/scripts/db-reset.js",
-        "db:studio": "node libs/db/prisma/scripts/studio.js",
+        "db:generate": "node libs/db/prisma/config/scripts/generate.js",
+        "db:migrate": "node libs/db/prisma/config/scripts/migrate.js",
+        "db:reset": "node libs/db/prisma/config/scripts/db-reset.js",
+        "db:studio": "node libs/db/prisma/config/scripts/studio.js",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest",
         "test:watch": "jest --watch",
@@ -93,11 +93,13 @@
             "<rootDir>/libs/"
         ],
         "moduleNameMapper": {
+            "^@app/db/test(|/.*)$": "<rootDir>/libs/db/test/src/$1",
             "^@app/models(|/.*)$": "<rootDir>/libs/models/src/$1",
             "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1",
             "^libs/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
             "^libs/common(|/.*)$": "<rootDir>/libs/common/src/$1",
             "^libs/db(|/.*)$": "<rootDir>/libs/db/src/$1",
+            "^libs/db/prisma(|/.*)$": "<rootDir>/libs/db/prisma/src/$1",
             "^libs/domains(|/.*)$": "<rootDir>/libs/domains/src/$1",
             "^libs/models(|/.*)$": "<rootDir>/libs/models/src/$1",
             "^libs/utils(|/.*)$": "<rootDir>/libs/utils/src/$1"

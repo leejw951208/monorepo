@@ -1,4 +1,4 @@
-export class CommonModel {
+export class BaseModel {
     id: number
     createdAt: Date
     createdBy: number

@@ -8,7 +8,6 @@ import { stdin, stdout } from 'node:process'
 
 async function main() {
     // 환경 입력
-    const schemaPath = `${path.resolve(process.cwd())}/libs/db/prisma`
     const rl = readline.createInterface({ input: stdin, output: stdout })
     const env = (await rl.question('환경 (local/dev): ')).trim()
     rl.close()
@@ -25,6 +24,7 @@ async function main() {
 
     try {
         console.log(`🚨 ${env} 환경 데이터베이스를 초기화합니다...`)
+        const schemaPath = `${path.resolve(process.cwd())}${process.env.PRISMA_SCHEMA_PATH}`
         execSync(`npx prisma migrate reset --force --schema=${schemaPath}`, { stdio: 'inherit' })
     } catch (error) {
         console.error('❌ DB 초기화 중 오류가 발생했습니다.')
