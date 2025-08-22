@@ -69,23 +69,22 @@ export const update = (clsService: ClsService) =>
         }
     })
 
-// delete 쿼리를 update 쿼리로 변경
 export const softDelete = (clsService: ClsService) =>
     Prisma.defineExtension({
         name: 'softDelete',
         model: {
             $allModels: {
-                async softDelete<T>(this: T, where: Prisma.Args<T, 'delete'>['where']) {
+                async softDelete<T>(this: T, args: Prisma.Args<T, 'delete'>) {
                     const context = Prisma.getExtensionContext(this)
                     return await (context as any).update({
-                        ...where,
+                        ...args,
                         data: { isDeleted: true, deletedBy: clsService.get('userId'), deletedAt: new Date() }
                     })
                 },
                 async softDeleteMany<T>(this: T, where: Prisma.Args<T, 'deleteMany'>['where']) {
                     const context = Prisma.getExtensionContext(this)
                     return await (context as any).updateMany({
-                        ...where,
+                        where,
                         data: { isDeleted: true, deletedBy: clsService.get('userId'), deletedAt: new Date() }
                     })
                 }

@@ -1,25 +1,25 @@
+import { SigninRequestDto } from '@apps/api/auth/dto/signin-request.dto'
 import { SigninResponseDto } from '@apps/api/auth/dto/signin-response.dto'
 import { SignupRequestDto } from '@apps/api/auth/dto/signup-request.dto'
 import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR, USER_ERROR } from '@libs/common/exception/error.code'
 import { BcryptUtil } from '@libs/common/utils/bcrypt.util'
 import { JwtUtil } from '@libs/common/utils/jwt.util'
-import { DbService } from '@libs/db/db.service'
+import { PRISMA } from '@libs/db/prisma/config/prisma-token'
 import { TokenModel } from '@libs/models/token/token.model'
-import { TokenRepository } from '@libs/models/token/token.repository'
 import { UserModel } from '@libs/models/user/user.model'
-import { UserRepository } from '@libs/models/user/user.repository'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { UserStatus } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
+import { ClsService } from 'nestjs-cls'
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly userRepository: UserRepository,
-        private readonly tokenRepository: TokenRepository,
+        @Inject(PRISMA) private readonly prisma: PrismaService,
         private readonly bcryptUtil: BcryptUtil,
-        private readonly jwtUtil: JwtUtil
+        private readonly jwtUtil: JwtUtil,
+        private readonly clsService: ClsService
     ) {}
 
     async signup(reqDto: SignupRequestDto): Promise<void> {
@@ -30,11 +30,11 @@ export class AuthService {
             name: reqDto.name,
             status: UserStatus.ACTIVE
         })
-        await this.userRepository.insert(createdUser)
+        await this.prisma.user.create({ data: createdUser })
     }
 
     async validate(email: string, password: string): Promise<UserModel> {
-        const foundUser = await this.userRepository.findOne({ email })
+        const foundUser = await this.prisma.user.findUnique({ where: { email } })
         if (!foundUser) {
             throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
         }
@@ -45,12 +45,22 @@ export class AuthService {
         return foundUser
     }
 
-    async signin(user: UserModel): Promise<SigninResponseDto> {
-        const accessToken = await this.jwtUtil.createAccessToken(user)
-        const refreshToken = await this.jwtUtil.createRefreshToken(user)
+    async signin(reqDto: SigninRequestDto): Promise<SigninResponseDto> {
+        const foundUser = await this.prisma.user.findUnique({ where: { email: reqDto.email } })
+        if (!foundUser) {
+            throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
+        }
 
-        const createdToken = TokenModel.create({ userId: user.id, refreshToken })
-        await this.tokenRepository.insert(createdToken)
+        const isMatched = await this.bcryptUtil.compare(reqDto.password, foundUser.password)
+        if (!isMatched) {
+            throw new BaseException(AUTH_ERROR.PASSWORD_NOT_MATCHED, this.constructor.name)
+        }
+
+        const accessToken = await this.jwtUtil.createAccessToken(foundUser)
+        const refreshToken = await this.jwtUtil.createRefreshToken(foundUser)
+
+        const createdToken = TokenModel.create({ userId: foundUser.id, refreshToken })
+        await this.prisma.token.create({ data: createdToken })
 
         return plainToInstance(SigninResponseDto, {
             accessToken,
@@ -61,7 +71,7 @@ export class AuthService {
     async signout(refreshToken: string): Promise<void> {
         // 토큰 검증 및 페이로드 추출
         const payload = await this.jwtUtil.verify(refreshToken, 're')
-        await this.tokenRepository.deleteMany({ userId: payload.userId, refreshToken })
+        await this.prisma.user.softDelete({ where: { id: payload.userId } })
     }
 
     async refreshToken(refreshToken: string): Promise<SigninResponseDto> {
@@ -69,11 +79,11 @@ export class AuthService {
         const payload = await this.jwtUtil.verify(refreshToken, 're')
 
         // 사용자 정보 조회
-        const foundUser = await this.userRepository.findOne({ id: payload.userId })
+        const foundUser = await this.prisma.user.findUnique({ where: { id: payload.userId } })
         if (!foundUser) throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
 
         // DB에서 리프레시 토큰 조회
-        const foundToken = await this.tokenRepository.findOne({ userId: foundUser.id, refreshToken })
+        const foundToken = await this.prisma.token.findFirst({ where: { userId: foundUser.id, refreshToken } })
         if (!foundToken) throw new BaseException(AUTH_ERROR.INVALID_REFRESH_TOKEN, this.constructor.name)
 
         // 새로운 토큰 생성
@@ -83,7 +93,7 @@ export class AuthService {
         ])
 
         // 토큰 갱신
-        await this.tokenRepository.update(foundToken.id, { refreshToken: newRefreshToken })
+        await this.prisma.token.update({ where: { id: foundToken.id }, data: { refreshToken: newRefreshToken } })
 
         return plainToInstance(SigninResponseDto, {
             accessToken: newAccessToken,

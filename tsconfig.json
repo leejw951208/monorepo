@@ -24,9 +24,8 @@
         "paths": {
             "@apps/api/*": ["apps/api/src/*"],
             "@libs/common/*": ["libs/common/src/*"],
-            "@libs/db/*": ["libs/db/src/*"],
-            "@libs/db/prisma/*": ["libs/db/prisma/*"],
-            "@libs/models/*": ["libs/models/src/*"]
+            "@libs/models/*": ["libs/models/src/*"],
+            "@libs/db/prisma/*": ["libs/db/prisma/src/*"]
         }
     }
 }

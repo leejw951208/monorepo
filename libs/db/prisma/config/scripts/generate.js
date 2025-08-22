@@ -8,7 +8,6 @@ import { stdin, stdout } from 'node:process'
 
 async function main() {
     // 1) 사용자에게 환경(prompt)과 파일명(prompt) 입력받기
-    const schemaPath = `${path.resolve(process.cwd())}/libs/db/prisma`
 
     const rl = readline.createInterface({ input: stdin, output: stdout })
     const env = (await rl.question('환경 (local/dev): ')).trim()
@@ -28,6 +27,7 @@ async function main() {
     // 4) 마이그레이션 파일 생성
     try {
         console.log(`📝 ${env} 환경에서 마이그레이션 파일을 생성합니다: ${migrationName}`)
+        const schemaPath = `${path.resolve(process.cwd())}${process.env.PRISMA_SCHEMA_PATH}`
         execSync(`npx prisma migrate dev --name ${migrationName} --create-only --schema=${schemaPath}`, { stdio: 'inherit' })
         console.log('✅ 마이그레이션 파일이 생성되었습니다. 파일을 검토 및 수정한 후, 별도의 스크립트를 통해 적용하세요.')
     } catch {
