@@ -11,15 +11,13 @@ import { UserModel } from '@libs/models/user/user.model'
 import { Inject, Injectable } from '@nestjs/common'
 import { UserStatus } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
-import { ClsService } from 'nestjs-cls'
 
 @Injectable()
 export class AuthService {
     constructor(
         @Inject(PRISMA) private readonly prisma: PrismaService,
         private readonly bcryptUtil: BcryptUtil,
-        private readonly jwtUtil: JwtUtil,
-        private readonly clsService: ClsService
+        private readonly jwtUtil: JwtUtil
     ) {}
 
     async signup(reqDto: SignupRequestDto): Promise<void> {
@@ -71,7 +69,7 @@ export class AuthService {
     async signout(refreshToken: string): Promise<void> {
         // 토큰 검증 및 페이로드 추출
         const payload = await this.jwtUtil.verify(refreshToken, 're')
-        await this.prisma.user.softDelete({ where: { id: payload.userId } })
+        await this.prisma.user.delete({ where: { id: payload.userId } })
     }
 
     async refreshToken(refreshToken: string): Promise<SigninResponseDto> {
