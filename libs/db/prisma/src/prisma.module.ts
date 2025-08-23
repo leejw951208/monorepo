@@ -11,8 +11,8 @@ import { Logger } from 'winston'
     providers: [
         {
             provide: PRISMA,
-            inject: [ConfigService, WINSTON_MODULE_NEST_PROVIDER, ClsService],
-            useFactory: (config: ConfigService, logger: Logger, cls: ClsService) => customPrismaClient(config, logger, cls)
+            inject: [ConfigService, ClsService, WINSTON_MODULE_NEST_PROVIDER],
+            useFactory: (config: ConfigService, cls: ClsService, logger: Logger) => customPrismaClient(config, cls, logger)
         },
         PrismaLifecycle
     ],
