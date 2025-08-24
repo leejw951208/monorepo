@@ -16,7 +16,10 @@ export class CustomClsMiddleware implements NestMiddleware {
             const authHeader = req.headers.authorization
             if (authHeader && authHeader.startsWith('Bearer ')) {
                 const token = authHeader.slice(7)
-                const { userId } = this.jwtService.decode<{ userId: number }>(token)
+                const payload = this.jwtService.decode<{ userId: number }>(token)
+
+                // payload가 없거나 userId가 없으면 null로 설정
+                const userId = payload?.userId ?? 0
                 this.cls.set('userId', userId)
             }
 

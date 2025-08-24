@@ -5,17 +5,17 @@ import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR, USER_ERROR } from '@libs/common/exception/error.code'
 import { BcryptUtil } from '@libs/common/utils/bcrypt.util'
 import { JwtUtil } from '@libs/common/utils/jwt.util'
-import { PRISMA } from '@libs/db/prisma/config/prisma-token'
+import { PrismaService } from '@libs/db/prisma/prisma.service'
 import { TokenModel } from '@libs/models/token/token.model'
 import { UserModel } from '@libs/models/user/user.model'
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { UserStatus } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 
 @Injectable()
 export class AuthService {
     constructor(
-        @Inject(PRISMA) private readonly prisma: PrismaService,
+        private readonly prisma: PrismaService,
         private readonly bcryptUtil: BcryptUtil,
         private readonly jwtUtil: JwtUtil
     ) {}
@@ -28,11 +28,11 @@ export class AuthService {
             name: reqDto.name,
             status: UserStatus.ACTIVE
         })
-        await this.prisma.user.create({ data: createdUser })
+        await this.prisma.client.user.create({ data: createdUser })
     }
 
     async validate(email: string, password: string): Promise<UserModel> {
-        const foundUser = await this.prisma.user.findUnique({ where: { email } })
+        const foundUser = await this.prisma.client.user.findUnique({ where: { email } })
         if (!foundUser) {
             throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
         }
@@ -44,7 +44,7 @@ export class AuthService {
     }
 
     async signin(reqDto: SigninRequestDto): Promise<SigninResponseDto> {
-        const foundUser = await this.prisma.user.findUnique({ where: { email: reqDto.email } })
+        const foundUser = await this.prisma.client.user.findUnique({ where: { email: reqDto.email } })
         if (!foundUser) {
             throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
         }
@@ -58,7 +58,7 @@ export class AuthService {
         const refreshToken = await this.jwtUtil.createRefreshToken(foundUser)
 
         const createdToken = TokenModel.create({ userId: foundUser.id, refreshToken })
-        await this.prisma.token.create({ data: createdToken })
+        await this.prisma.client.token.create({ data: createdToken })
 
         return plainToInstance(SigninResponseDto, {
             accessToken,
@@ -69,7 +69,7 @@ export class AuthService {
     async signout(refreshToken: string): Promise<void> {
         // 토큰 검증 및 페이로드 추출
         const payload = await this.jwtUtil.verify(refreshToken, 're')
-        await this.prisma.user.delete({ where: { id: payload.userId } })
+        await this.prisma.client.user.softDelete({ where: { id: payload.userId } })
     }
 
     async refreshToken(refreshToken: string): Promise<SigninResponseDto> {
@@ -77,11 +77,11 @@ export class AuthService {
         const payload = await this.jwtUtil.verify(refreshToken, 're')
 
         // 사용자 정보 조회
-        const foundUser = await this.prisma.user.findUnique({ where: { id: payload.userId } })
+        const foundUser = await this.prisma.client.user.findUnique({ where: { id: payload.userId } })
         if (!foundUser) throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
 
         // DB에서 리프레시 토큰 조회
-        const foundToken = await this.prisma.token.findFirst({ where: { userId: foundUser.id, refreshToken } })
+        const foundToken = await this.prisma.client.token.findFirst({ where: { userId: foundUser.id, refreshToken } })
         if (!foundToken) throw new BaseException(AUTH_ERROR.INVALID_REFRESH_TOKEN, this.constructor.name)
 
         // 새로운 토큰 생성
@@ -91,7 +91,7 @@ export class AuthService {
         ])
 
         // 토큰 갱신
-        await this.prisma.token.update({ where: { id: foundToken.id }, data: { refreshToken: newRefreshToken } })
+        await this.prisma.client.token.update({ where: { id: foundToken.id }, data: { refreshToken: newRefreshToken } })
 
         return plainToInstance(SigninResponseDto, {
             accessToken: newAccessToken,

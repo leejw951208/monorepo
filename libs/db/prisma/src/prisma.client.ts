@@ -1,6 +1,6 @@
-import { createExtension, filterSoftDeletedExtension, softDeleteExtension, updateExtension } from '@libs/db/prisma/config/prisma-extenstion'
+import { createExtension, filterSoftDeletedExtension, softDeleteExtension, updateExtension } from '@libs/db/prisma/prisma-extenstion'
 import { ConfigService } from '@nestjs/config'
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import { ClsService } from 'nestjs-cls'
 import { Logger } from 'winston'
 
@@ -10,8 +10,8 @@ export const customPrismaClient = (config: ConfigService, cls: ClsService, logge
         log: [{ emit: 'event', level: 'query' }]
     })
 
-    client.$on('query' as never, ({ query, params }) => {
-        logger.debug(`${query}: ${params}`)
+    client.$on('query', (e: Prisma.QueryEvent) => {
+        logger.debug(`${e.query}: ${e.params}`)
     })
 
     return client
