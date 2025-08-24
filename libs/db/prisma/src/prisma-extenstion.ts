@@ -15,7 +15,6 @@ export const filterSoftDeletedExtension = Prisma.defineExtension({
             async $allOperations({ operation, args, query }: { operation: string; args: any; query: (a: any) => any }) {
                 if (args && 'withDeleted' in args) {
                     delete args.withDeleted
-                    console.log(operation, args)
                     return query(args)
                 }
                 if (findOperations.includes(operation as FindOperation)) {

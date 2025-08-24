@@ -1,22 +1,36 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common'
-import { ParseIntPipe } from '@nestjs/common'
-import { UserService } from './user.service'
+import { UserCursorPageReqDto, UserOffsetPageReqDto } from '@apps/api/user/dto/user-page-req.dto'
+import { UserResDto } from '@apps/api/user/dto/user-res.dto'
+import { ApiCursorPageOkResponse, ApiOffsetPageOkResponse } from '@libs/common/decorator/api-page-ok-response.decorator'
 import { Public } from '@libs/common/decorator/public.decorator'
-import { UserModel } from '@libs/models/user/user.model'
+import { CursorPageResDto, OffsetPageResDto } from '@libs/common/dto/page-res.dto'
+import { Controller, Get, Query } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { UserService } from './user.service'
 
-@Controller('user')
+const path = 'user'
+@ApiTags(path)
+@ApiBearerAuth('JWT-Auth')
+@Controller(path)
 export class UserController {
     constructor(private readonly service: UserService) {}
 
-    @Public()
-    @Get(':id')
-    async findUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        this.service.findUser(id)
+    @ApiOperation({
+        summary: '회원 페이지 조회, Offset',
+        description: '회원 페이지 조회'
+    })
+    @ApiOffsetPageOkResponse(UserResDto)
+    @Get('offset')
+    async findUsers(@Query() query: UserOffsetPageReqDto): Promise<OffsetPageResDto<UserResDto>> {
+        return this.service.findUsersWithOffset(query)
     }
 
-    @Public()
-    @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.service.delete(id)
+    @ApiOperation({
+        summary: '회원 페이지 조회, Cursor',
+        description: '회원 페이지 조회'
+    })
+    @ApiCursorPageOkResponse(UserResDto)
+    @Get('cursor')
+    async findUsersWithCursor(@Query() query: UserCursorPageReqDto): Promise<CursorPageResDto<UserResDto>> {
+        return this.service.findUsersWithCursor(query)
     }
 }

@@ -25,6 +25,9 @@ async function bootstrap() {
         defaultVersion: configService.get<string>('API_VERSIONING')?.split('')[1] ?? '1'
     })
 
+    app.enableShutdownHooks()
+
+    // 스웨거 설정
     setupSwagger(app)
 
     await app.listen(configService.get<number>('PORT') ?? 3000)
