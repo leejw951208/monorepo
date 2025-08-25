@@ -1,7 +1,7 @@
 import { BaseModel } from '@libs/models/base/base.model'
-import { Token } from '@prisma/client'
+import { JwtToken } from '@prisma/client'
 
-export class TokenModel extends BaseModel implements Token {
+export class TokenModel extends BaseModel implements JwtToken {
     userId: number
     refreshToken: string
 
@@ -11,7 +11,7 @@ export class TokenModel extends BaseModel implements Token {
         this.refreshToken = refreshToken
     }
 
-    static create(input: Pick<Token, 'userId' | 'refreshToken'>): TokenModel {
+    static create(input: Pick<JwtToken, 'userId' | 'refreshToken'>): TokenModel {
         return new TokenModel(input.userId, input.refreshToken)
     }
 }

@@ -1,4 +1,4 @@
-import { createExtension, filterSoftDeletedExtension, softDeleteExtension, updateExtension } from '@libs/db/prisma/prisma-extenstion'
+import { createExtension, filterSoftDeletedExtension, softDeleteExtension, updateExtension } from '@libs/prisma/prisma-extension'
 import { ConfigService } from '@nestjs/config'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { ClsService } from 'nestjs-cls'

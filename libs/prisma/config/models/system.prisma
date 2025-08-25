@@ -1,0 +1,66 @@
+enum SiteType {
+    ADMIN
+    USER
+
+    @@schema("base")
+}
+
+model Role {
+    id        Int       @id @default(autoincrement())
+    name      String    @map("name")
+    site      SiteType  @default(USER) @map("site")
+    createdAt DateTime  @default(now()) @map("created_at")
+    createdBy Int       @map("created_by")
+    updatedAt DateTime? @updatedAt @map("updated_at")
+    updatedBy Int?      @map("updated_by")
+    isDeleted Boolean?  @default(false) @map("is_deleted")
+    deletedAt DateTime? @map("deleted_at")
+    deletedBy Int?      @map("deleted_by")
+
+    permissions     Permission[]
+    userRoles       UserRole[]
+    rolePermissions RolePermission[]
+
+    @@map("role")
+    @@schema("base")
+}
+
+model Permission {
+    id        Int       @id @default(autoincrement())
+    roleId    Int       @map("role_id")
+    role      Role      @relation(fields: [roleId], references: [id])
+    scope     String    @map("scope")
+    action    String    @map("action")
+    createdAt DateTime  @default(now()) @map("created_at")
+    createdBy Int       @map("created_by")
+    updatedAt DateTime? @updatedAt @map("updated_at")
+    updatedBy Int?      @map("updated_by")
+    isDeleted Boolean?  @default(false) @map("is_deleted")
+    deletedAt DateTime? @map("deleted_at")
+    deletedBy Int?      @map("deleted_by")
+
+    rolePermissions RolePermission[]
+
+    @@unique([scope, action])
+    @@map("permission")
+    @@schema("base")
+}
+
+model RolePermission {
+    id           Int        @id @default(autoincrement())
+    roleId       Int        @map("role_id")
+    role         Role       @relation(fields: [roleId], references: [id])
+    permissionId Int        @map("permission_id")
+    permission   Permission @relation(fields: [permissionId], references: [id])
+    createdAt    DateTime   @default(now()) @map("created_at")
+    createdBy    Int        @map("created_by")
+    updatedAt    DateTime?  @updatedAt @map("updated_at")
+    updatedBy    Int?       @map("updated_by")
+    isDeleted    Boolean?   @default(false) @map("is_deleted")
+    deletedAt    DateTime?  @map("deleted_at")
+    deletedBy    Int?       @map("deleted_by")
+
+    @@unique([roleId, permissionId])
+    @@map("role_permission")
+    @@schema("base")
+}

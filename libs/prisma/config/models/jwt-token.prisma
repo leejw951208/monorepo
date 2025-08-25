@@ -1,4 +1,4 @@
-model Token {
+model JwtToken {
     id           Int       @id @default(autoincrement())
     userId       Int       @map("user_id")
     user         User      @relation(fields: [userId], references: [id])
@@ -11,6 +11,7 @@ model Token {
     deletedAt    DateTime? @map("deleted_at")
     deletedBy    Int?      @map("deleted_by")
 
-    @@index([userId]) // userId에 인덱스만 추가
-    @@map("token")
+    @@index([userId])
+    @@map("jwt_token")
+    @@schema("base")
 }

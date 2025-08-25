@@ -1,4 +1,4 @@
-import { customPrismaClient } from '@libs/db/prisma/prisma.client'
+import { customPrismaClient } from '@libs/prisma/prisma.client'
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PrismaClient } from '@prisma/client'
