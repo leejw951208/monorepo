@@ -1,14 +1,16 @@
 import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR } from '@libs/common/exception/error.code'
-import { UserModel } from '@libs/models/user/user.model'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
+import { Admin, User } from '@prisma/client'
 
-interface TokenPayload {
-    userId: number
-    type: string
-    key: string
+type Aud = 'admin' | 'api'
+
+export type TokenPayload = {
+    pk?: number
+    type?: string
+    aud?: Aud
 }
 
 @Injectable()
@@ -26,21 +28,21 @@ export class JwtUtil {
         this.jwtSecretKey = this.configService.get<string>('JWT_SECRET_KEY')!
     }
 
-    async createAccessToken(user: UserModel): Promise<string> {
-        const payload = this.createTokenPayload(user, 'ac')
+    async createAccessToken(model: User | Admin, aud: Aud): Promise<string> {
+        const payload = this.createTokenPayload(model, aud, 'ac')
         return await this.signToken(payload, this.accessTokenExpiresIn)
     }
 
-    async createRefreshToken(user: UserModel): Promise<string> {
-        const payload = this.createTokenPayload(user, 're')
+    async createRefreshToken(model: User | Admin, aud: Aud): Promise<string> {
+        const payload = this.createTokenPayload(model, aud, 're')
         return await this.signToken(payload, this.refreshTokenExpiresIn)
     }
 
-    createTokenPayload(user: UserModel, type: 'ac' | 're'): TokenPayload {
+    createTokenPayload(model: User | Admin, aud: Aud, type: 'ac' | 're'): TokenPayload {
         return {
-            userId: user.id,
+            pk: model.id,
             type,
-            key: 'nsp'
+            aud
         } as TokenPayload
     }
 

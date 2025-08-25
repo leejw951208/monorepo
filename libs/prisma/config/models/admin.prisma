@@ -1,4 +1,4 @@
-model User {
+model Admin {
     id        Int        @id @default(autoincrement())
     loginId   String     @unique @map("login_id")
     password  String     @map("password")
@@ -14,17 +14,17 @@ model User {
     deletedAt DateTime?  @map("deleted_at")
     deletedBy Int?       @map("deleted_by")
 
-    jwtTokens JwtToken[]
-    userRoles UserRole[]
+    jwtTokens  JwtToken[]
+    adminRoles AdminRole[]
 
-    @@map("user")
+    @@map("admin")
     @@schema("base")
 }
 
-model UserRole {
+model AdminRole {
     id        Int       @id @default(autoincrement())
-    userId    Int       @map("user_id")
-    user      User      @relation(fields: [userId], references: [id])
+    adminId   Int       @map("admin_id")
+    admin     Admin     @relation(fields: [adminId], references: [id])
     roleId    Int       @map("role_id")
     role      Role      @relation(fields: [roleId], references: [id])
     createdAt DateTime  @default(now()) @map("created_at")
@@ -35,7 +35,7 @@ model UserRole {
     deletedAt DateTime? @map("deleted_at")
     deletedBy Int?      @map("deleted_by")
 
-    @@unique([userId, roleId])
-    @@map("user_role")
+    @@unique([adminId, roleId])
+    @@map("admin_role")
     @@schema("base")
 }

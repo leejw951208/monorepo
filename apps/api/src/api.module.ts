@@ -1,3 +1,7 @@
+import { ApiController } from '@apps/api/api.controller'
+import { ApiService } from '@apps/api/api.service'
+import { AuthModule } from '@apps/api/auth/auth.module'
+import { UserModule } from '@apps/api/user/user.module'
 import { winstonModuleAsyncOptions } from '@libs/common/config/winston.config'
 import { JwtGuard } from '@libs/common/guard/jwt.guard'
 import { CustomClsMiddleware } from '@libs/common/middleware/cls.middleware'
@@ -6,14 +10,9 @@ import { PrismaModule } from '@libs/prisma/prisma.module'
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
-import { UserModule } from 'apps/api/src/user/user.module'
 import { WinstonModule } from 'nest-winston'
 import { ClsModule } from 'nestjs-cls'
 import * as path from 'path'
-import { ApiController } from './api.controller'
-import { ApiService } from './api.service'
-import { AuthModule } from './auth/auth.module'
-import { PermissionModule } from './system/permission/permission.module'
 
 @Module({
     imports: [
@@ -32,8 +31,7 @@ import { PermissionModule } from './system/permission/permission.module'
         WinstonModule.forRootAsync(winstonModuleAsyncOptions),
         PrismaModule,
         AuthModule,
-        UserModule,
-        PermissionModule
+        UserModule
     ],
     controllers: [ApiController],
     providers: [ApiService, { provide: APP_GUARD, useClass: JwtGuard }]

@@ -1,8 +1,12 @@
 model JwtToken {
     id           Int       @id @default(autoincrement())
-    userId       Int       @map("user_id")
-    user         User      @relation(fields: [userId], references: [id])
+    userId       Int?      @map("user_id")
+    user         User?     @relation(fields: [userId], references: [id])
+    adminId      Int?      @map("admin_id")
+    admin        Admin?    @relation(fields: [adminId], references: [id])
     refreshToken String    @map("refresh_token")
+    site         Site      @default(ADMIN) @map("site")
+    jwtType      JwtType   @default(ACCESS) @map("jwt_type")
     createdAt    DateTime  @default(now()) @map("created_at")
     createdBy    Int       @map("created_by")
     updatedAt    DateTime? @updatedAt @map("updated_at")
@@ -11,7 +15,9 @@ model JwtToken {
     deletedAt    DateTime? @map("deleted_at")
     deletedBy    Int?      @map("deleted_by")
 
-    @@index([userId])
+    @@index([site, userId])
+    @@index([site, adminId])
+    @@index([jwtType])
     @@map("jwt_token")
     @@schema("base")
 }

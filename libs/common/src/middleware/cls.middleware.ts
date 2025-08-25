@@ -1,3 +1,4 @@
+import { TokenPayload } from '@libs/common/utils/jwt.util'
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { NextFunction, Request, Response } from 'express'
@@ -12,15 +13,12 @@ export class CustomClsMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: NextFunction) {
         this.cls.run(() => {
-            this.cls.set('userId', 0)
+            this.cls.set('pk', 0)
             const authHeader = req.headers.authorization
             if (authHeader && authHeader.startsWith('Bearer ')) {
                 const token = authHeader.slice(7)
-                const payload = this.jwtService.decode<{ userId: number }>(token)
-
-                // payload가 없거나 userId가 없으면 null로 설정
-                const userId = payload?.userId ?? 0
-                this.cls.set('userId', userId)
+                const payload = this.jwtService.decode<TokenPayload>(token)
+                if (payload) this.cls.set('tokenPayload', payload)
             }
 
             const userAgent = req.headers['user-agent'] ?? 'unknown'
