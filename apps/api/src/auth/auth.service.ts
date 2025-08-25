@@ -5,11 +5,11 @@ import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR, USER_ERROR } from '@libs/common/exception/error.code'
 import { BcryptUtil } from '@libs/common/utils/bcrypt.util'
 import { JwtUtil } from '@libs/common/utils/jwt.util'
-import { TokenModel } from '@libs/models/token/token.model'
+import { JwtTokenModel } from '@libs/models/token/jwt-token.model'
 import { UserModel } from '@libs/models/user/user.model'
 import { PrismaService } from '@libs/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
-import { UserStatus } from '@prisma/client'
+import { JwtType, Site, UserStatus } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 
 @Injectable()
@@ -42,10 +42,10 @@ export class AuthService {
             throw new BaseException(AUTH_ERROR.PASSWORD_NOT_MATCHED, this.constructor.name)
         }
 
-        const accessToken = await this.jwtUtil.createAccessToken(foundUser)
-        const refreshToken = await this.jwtUtil.createRefreshToken(foundUser)
+        const accessToken = await this.jwtUtil.createAccessToken(foundUser, 'api')
+        const refreshToken = await this.jwtUtil.createRefreshToken(foundUser, 'api')
 
-        const createdToken = TokenModel.create({ userId: foundUser.id, refreshToken })
+        const createdToken = JwtTokenModel.create({ userId: foundUser.id, refreshToken, site: Site.USER, jwtType: JwtType.REFRESH })
         await this.prisma.client.jwtToken.create({ data: createdToken })
 
         return plainToInstance(SigninResponseDto, {
@@ -57,7 +57,7 @@ export class AuthService {
     async signout(refreshToken: string): Promise<void> {
         // 토큰 검증 및 페이로드 추출
         const payload = await this.jwtUtil.verify(refreshToken, 're')
-        await this.prisma.client.user.softDelete({ where: { id: payload.userId } })
+        await this.prisma.client.user.softDelete({ where: { id: payload.pk } })
     }
 
     async refreshToken(refreshToken: string): Promise<SigninResponseDto> {
@@ -65,7 +65,7 @@ export class AuthService {
         const payload = await this.jwtUtil.verify(refreshToken, 're')
 
         // 사용자 정보 조회
-        const foundUser = await this.prisma.client.user.findUnique({ where: { id: payload.userId } })
+        const foundUser = await this.prisma.client.user.findUnique({ where: { id: payload.pk } })
         if (!foundUser) throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
 
         // DB에서 리프레시 토큰 조회
@@ -74,8 +74,8 @@ export class AuthService {
 
         // 새로운 토큰 생성
         const [newAccessToken, newRefreshToken] = await Promise.all([
-            this.jwtUtil.createAccessToken(foundUser),
-            this.jwtUtil.createRefreshToken(foundUser)
+            this.jwtUtil.createAccessToken(foundUser, 'api'),
+            this.jwtUtil.createRefreshToken(foundUser, 'api')
         ])
 
         // 토큰 갱신

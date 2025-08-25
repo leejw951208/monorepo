@@ -10,17 +10,10 @@
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "NODE_ENV=local nest start --watch",
         "start:debug": "nest start --debug --watch",
-<<<<<<< HEAD
-        "db:generate": "node libs/db/prisma/config/scripts/generate.js",
-        "db:migrate": "node libs/db/prisma/config/scripts/migrate.js",
-        "db:reset": "node libs/db/prisma/config/scripts/db-reset.js",
-        "db:studio": "node libs/db/prisma/config/scripts/studio.js",
-=======
         "db:generate": "node libs/prisma/config/scripts/generate.js",
         "db:migrate": "node libs/prisma/config/scripts/migrate.js",
         "db:reset": "node libs/prisma/config/scripts/db-reset.js",
         "db:studio": "node libs/prisma/config/scripts/studio.js",
->>>>>>> 45ccdfc (feat: 권한 작업중)
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest",
         "test:watch": "jest --watch",
