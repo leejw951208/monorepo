@@ -5,9 +5,9 @@ import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR, USER_ERROR } from '@libs/common/exception/error.code'
 import { BcryptUtil } from '@libs/common/utils/bcrypt.util'
 import { JwtUtil } from '@libs/common/utils/jwt.util'
-import { PrismaService } from '@libs/db/prisma/prisma.service'
 import { TokenModel } from '@libs/models/token/token.model'
 import { UserModel } from '@libs/models/user/user.model'
+import { PrismaService } from '@libs/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
 import { UserStatus } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
@@ -31,18 +31,6 @@ export class AuthService {
         await this.prisma.client.user.create({ data: createdUser })
     }
 
-    async validate(email: string, password: string): Promise<UserModel> {
-        const foundUser = await this.prisma.client.user.findUnique({ where: { email } })
-        if (!foundUser) {
-            throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
-        }
-        const isMatched = await this.bcryptUtil.compare(password, foundUser.password)
-        if (!isMatched) {
-            throw new BaseException(AUTH_ERROR.PASSWORD_NOT_MATCHED, this.constructor.name)
-        }
-        return foundUser
-    }
-
     async signin(reqDto: SigninRequestDto): Promise<SigninResponseDto> {
         const foundUser = await this.prisma.client.user.findUnique({ where: { email: reqDto.email } })
         if (!foundUser) {
@@ -58,7 +46,7 @@ export class AuthService {
         const refreshToken = await this.jwtUtil.createRefreshToken(foundUser)
 
         const createdToken = TokenModel.create({ userId: foundUser.id, refreshToken })
-        await this.prisma.client.token.create({ data: createdToken })
+        await this.prisma.client.jwtToken.create({ data: createdToken })
 
         return plainToInstance(SigninResponseDto, {
             accessToken,
@@ -81,7 +69,7 @@ export class AuthService {
         if (!foundUser) throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
 
         // DB에서 리프레시 토큰 조회
-        const foundToken = await this.prisma.client.token.findFirst({ where: { userId: foundUser.id, refreshToken } })
+        const foundToken = await this.prisma.client.jwtToken.findFirst({ where: { userId: foundUser.id, refreshToken } })
         if (!foundToken) throw new BaseException(AUTH_ERROR.INVALID_REFRESH_TOKEN, this.constructor.name)
 
         // 새로운 토큰 생성
@@ -91,7 +79,7 @@ export class AuthService {
         ])
 
         // 토큰 갱신
-        await this.prisma.client.token.update({ where: { id: foundToken.id }, data: { refreshToken: newRefreshToken } })
+        await this.prisma.client.jwtToken.update({ where: { id: foundToken.id }, data: { refreshToken: newRefreshToken } })
 
         return plainToInstance(SigninResponseDto, {
             accessToken: newAccessToken,

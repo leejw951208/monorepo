@@ -2,9 +2,11 @@ import { BaseModel } from '@libs/models/base/base.model'
 import { User, UserStatus } from '@prisma/client'
 
 export class UserModel extends BaseModel implements User {
-    name: string
-    email: string
+    loginId: string
     password: string
+    email: string
+    name: string
+    phone: string
     status: UserStatus
 
     private constructor(email: string, password: string, name: string, status: UserStatus) {

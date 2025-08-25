@@ -1,4 +1,4 @@
 import { SetMetadata } from '@nestjs/common'
 
-export const PERMS_KEY = 'perms'
-export const Permissions = (scope: string, action: string = 'read') => SetMetadata(PERMS_KEY, { scope, action })
+export const PERMISSION_KEY = 'permission'
+export const Permission = (scope: string, action: string = 'read') => SetMetadata(PERMISSION_KEY, { scope, action })

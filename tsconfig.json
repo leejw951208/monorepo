@@ -23,9 +23,10 @@
         "noFallthroughCasesInSwitch": false,
         "paths": {
             "@apps/api/*": ["apps/api/src/*"],
+            "@apps/admin/*": ["apps/admin/src/*"],
             "@libs/common/*": ["libs/common/src/*"],
             "@libs/models/*": ["libs/models/src/*"],
-            "@libs/db/prisma/*": ["libs/db/prisma/src/*"]
+            "@libs/prisma/*": ["libs/prisma/src/*"]
         }
     }
 }

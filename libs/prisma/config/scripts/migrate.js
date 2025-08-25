@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process'
-import dotenv from 'dotenv'
-import path from 'path'
-import readline from 'node:readline/promises'
-import { stdin, stdout } from 'node:process'
+const { execSync } = require('child_process')
+const dotenv = require('dotenv')
+const path = require('path')
+const readline = require('node:readline/promises')
+const { stdin, stdout } = require('node:process')
 
 async function main() {
     // 1) 사용자에게 환경(prompt) 입력받기
