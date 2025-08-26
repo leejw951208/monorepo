@@ -1,23 +1,36 @@
-model JwtToken {
-    id           Int       @id @default(autoincrement())
-    userId       Int?      @map("user_id")
-    user         User?     @relation(fields: [userId], references: [id])
-    adminId      Int?      @map("admin_id")
-    admin        Admin?    @relation(fields: [adminId], references: [id])
-    refreshToken String    @map("refresh_token")
-    site         Site      @default(ADMIN) @map("site")
-    jwtType      JwtType   @default(ACCESS) @map("jwt_type")
-    createdAt    DateTime  @default(now()) @map("created_at")
-    createdBy    Int       @map("created_by")
-    updatedAt    DateTime? @updatedAt @map("updated_at")
-    updatedBy    Int?      @map("updated_by")
-    isDeleted    Boolean?  @default(false) @map("is_deleted")
-    deletedAt    DateTime? @map("deleted_at")
-    deletedBy    Int?      @map("deleted_by")
+model Token {
+    id        Int       @id @default(autoincrement())
+    tokenHash String    @map("token_hash")
+    tokenType TokenType @map("token_type")
+    owner     Owner     @map("owner")
+    ownerId   Int       @map("owner_id")
+    createdAt DateTime  @default(now()) @map("created_at")
+    createdBy Int       @map("created_by")
+    updatedAt DateTime? @updatedAt @map("updated_at")
+    updatedBy Int?      @map("updated_by")
+    isDeleted Boolean?  @default(false) @map("is_deleted")
+    deletedAt DateTime? @map("deleted_at")
+    deletedBy Int?      @map("deleted_by")
 
-    @@index([site, userId])
-    @@index([site, adminId])
-    @@index([jwtType])
-    @@map("jwt_token")
+    tokenJwt TokenJwt?
+
+    @@map("token")
+    @@schema("base")
+}
+
+model TokenJwt {
+    id        Int       @id @default(autoincrement())
+    tokenId   Int       @map("token_id")
+    token     Token     @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+    createdAt DateTime  @default(now()) @map("created_at")
+    createdBy Int       @map("created_by")
+    updatedAt DateTime? @updatedAt @map("updated_at")
+    updatedBy Int?      @map("updated_by")
+    isDeleted Boolean?  @default(false) @map("is_deleted")
+    deletedAt DateTime? @map("deleted_at")
+    deletedBy Int?      @map("deleted_by")
+
+    @@unique([tokenId])
+    @@map("token_jwt")
     @@schema("base")
 }

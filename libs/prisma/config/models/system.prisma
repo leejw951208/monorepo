@@ -1,7 +1,7 @@
 model Role {
     id          Int       @id @default(autoincrement())
     name        String    @map("name")
-    site        Site      @default(USER) @map("site")
+    owner       Owner     @default(USER) @map("owner")
     description String?   @map("description")
     createdAt   DateTime  @default(now()) @map("created_at")
     createdBy   Int       @map("created_by")
@@ -13,7 +13,6 @@ model Role {
 
     userRoles       UserRole[]
     adminRoles      AdminRole[]
-    permissions     Permission[]
     rolePermissions RolePermission[]
 
     @@map("role")
@@ -22,8 +21,6 @@ model Role {
 
 model Permission {
     id        Int       @id @default(autoincrement())
-    roleId    Int       @map("role_id")
-    role      Role      @relation(fields: [roleId], references: [id])
     scope     String    @map("scope")
     action    String    @map("action")
     createdAt DateTime  @default(now()) @map("created_at")

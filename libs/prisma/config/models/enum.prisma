@@ -6,7 +6,7 @@ enum UserStatus {
     @@schema("public")
 }
 
-enum Site {
+enum Owner {
     ADMIN
     USER
 
@@ -24,6 +24,13 @@ enum Platform {
     ANDROID
     IOS
     WEB
+
+    @@schema("public")
+}
+
+enum TokenType {
+    JWT
+    FCM
 
     @@schema("public")
 }
