@@ -8,9 +8,10 @@ import { Admin, User } from '@prisma/client'
 type Aud = 'admin' | 'api'
 
 export type TokenPayload = {
-    pk?: number
+    id?: number
     type?: string
     aud?: Aud
+    issuer?: string
 }
 
 @Injectable()
@@ -40,9 +41,10 @@ export class JwtUtil {
 
     createTokenPayload(model: User | Admin, aud: Aud, type: 'ac' | 're'): TokenPayload {
         return {
-            pk: model.id,
+            id: model.id,
             type,
-            aud
+            aud,
+            issuer: 'monorepo'
         } as TokenPayload
     }
 
@@ -58,7 +60,7 @@ export class JwtUtil {
             secret: this.jwtSecretKey
         })
 
-        if (payload.type !== type) {
+        if (payload.type !== type || payload.issuer !== 'monorepo') {
             throw new BaseException(AUTH_ERROR.INVALID_REFRESH_TOKEN, this.constructor.name)
         }
 

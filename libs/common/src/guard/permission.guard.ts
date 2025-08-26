@@ -15,23 +15,18 @@ export class PermissionGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const payload = this.cls.get<TokenPayload>('tokenPayload')
-        const pk = payload?.pk
-        const aud = payload?.aud
-        if (!pk) {
-            throw new BaseException(AUTH_ERROR.RESOURCE_ACCESS_DENIED, this.constructor.name)
-        }
+        const id = this.cls.get('id')
+        const aud = this.cls.get('aud')
+        if (!id || !aud) throw new BaseException(AUTH_ERROR.RESOURCE_ACCESS_DENIED, this.constructor.name)
 
         const permission = this.reflector.get<{ scope: string; action: string }>('permission', context.getHandler())
-        if (!permission) {
-            return true
-        }
+        if (!permission) return true
 
         // aud별 조인 경로
         const whereByAud =
             aud === 'admin'
-                ? { rolePermissions: { some: { role: { adminRoles: { some: { adminId: pk } } } } } } // Admin용
-                : { rolePermissions: { some: { role: { userRoles: { some: { userId: pk } } } } } } // User용
+                ? { rolePermissions: { some: { role: { adminRoles: { some: { adminId: id } } } } } } // Admin용
+                : { rolePermissions: { some: { role: { userRoles: { some: { userId: id } } } } } } // User용
 
         const owned = await this.prisma.client.permission.findFirst({
             where: {

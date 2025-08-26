@@ -9,15 +9,17 @@ export class UserModel extends BaseModel implements User {
     phone: string
     status: UserStatus
 
-    private constructor(email: string, password: string, name: string, status: UserStatus) {
+    private constructor(loginId: string, password: string, email: string, name: string, phone: string, status: UserStatus) {
         super()
-        this.email = email
+        this.loginId = loginId
         this.password = password
+        this.email = email
         this.name = name
+        this.phone = phone
         this.status = status
     }
 
-    static create(input: Pick<User, 'email' | 'password' | 'name' | 'status'>): UserModel {
-        return new UserModel(input.email, input.password, input.name, input.status)
+    static create(input: Pick<User, 'loginId' | 'password' | 'email' | 'name' | 'phone' | 'status'>): UserModel {
+        return new UserModel(input.loginId, input.password, input.email, input.name, input.phone, input.status)
     }
 }

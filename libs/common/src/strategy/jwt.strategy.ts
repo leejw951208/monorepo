@@ -1,15 +1,10 @@
+import { TokenPayload } from '@libs/common/utils/jwt.util'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { BaseException } from '../exception/base.exception'
 import { AUTH_ERROR } from '../exception/error.code'
-
-interface JwtPayload {
-    userId: number
-    type: string
-    key: string
-}
 
 /**
  * JWT 인증 전략 - passport-jwt를 사용한 JWT 토큰 기반 인증
@@ -21,7 +16,7 @@ interface JwtPayload {
  * 4. JWT_SECRET_KEY로 토큰 검증 (서명, 만료시간)
  * 5. 토큰이 유효하면 페이로드를 validate() 메서드에 전달
  * 6. validate()에서 추가 검증 수행 (토큰 타입, 키 검증)
- * 7. 검증 성공시 사용자 정보를 반환, 실패시 예외 발생
+ * 7. 검증 성공시 사용자 PK 반환, 실패시 예외 발생
  *
  * super() 호출 이유:
  * - jwtFromRequest: Bearer 토큰에서 JWT 추출 방식 설정
@@ -38,10 +33,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         })
     }
 
-    async validate(payload: JwtPayload) {
-        if (payload.type !== 'ac' || payload.key !== 'nsp') {
+    async validate(payload: TokenPayload) {
+        if (payload.type !== 'ac' || payload.issuer !== 'monorepo') {
             throw new BaseException(AUTH_ERROR.INVALID_ACCESS_TOKEN, this.constructor.name)
         }
-        return { userId: payload.userId }
+        return { id: payload.id }
     }
 }

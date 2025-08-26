@@ -4,7 +4,7 @@ import { ClsService } from 'nestjs-cls'
 const findOperations = ['findFirst', 'findFirstOrThrow', 'findMany', 'count', 'aggregate', 'groupBy'] as const
 type FindOperation = (typeof findOperations)[number]
 
-function mergeWhere<T extends object | undefined>(where: T): any {
+const mergeWhere = <T extends object | undefined>(where: T): any => {
     if (!where) return { isDeleted: false }
     return { AND: [where, { isDeleted: false }] }
 }
@@ -32,15 +32,13 @@ export const createExtension = (cls: ClsService) =>
         query: {
             $allModels: {
                 async create({ args, query }) {
-                    const userId = cls.get('userId')
-                    args.data = { ...(args.data ?? {}), createdBy: userId }
+                    args.data = { ...(args.data ?? {}), createdBy: cls.get('id'), isDeleted: false }
                     return query(args)
                 },
                 async createMany({ args, query }) {
-                    const userId = cls.get('userId')
                     args.data = Array.isArray(args.data)
-                        ? args.data.map((d: any) => ({ ...(d ?? {}), createdBy: userId }))
-                        : { ...(args.data ?? {}), createdBy: userId }
+                        ? args.data.map((d: any) => ({ ...(d ?? {}), createdBy: cls.get('id'), isDeleted: false }))
+                        : { ...(args.data ?? {}), createdBy: cls.get('id'), isDeleted: false }
                     return query(args)
                 }
             }
@@ -52,15 +50,13 @@ export const updateExtension = (cls: ClsService) =>
         query: {
             $allModels: {
                 async update(this: object, { args, query }: { args: any; query: any }) {
-                    const userId = cls.get('userId')
-                    args.data = { ...(args.data ?? {}), updatedBy: userId, updatedAt: new Date() }
+                    args.data = { ...(args.data ?? {}), updatedBy: cls.get('id'), updatedAt: new Date() }
                     return query(args)
                 },
                 async updateMany(this: object, { args, query }: { args: any; query: any }) {
-                    const userId = cls.get('userId')
                     args.data = Array.isArray(args.data)
-                        ? args.data.map((d: any) => ({ ...(d ?? {}), updatedBy: userId, updatedAt: new Date() }))
-                        : { ...(args.data ?? {}), updatedBy: userId, updatedAt: new Date() }
+                        ? args.data.map((d: any) => ({ ...(d ?? {}), updatedBy: cls.get('id'), updatedAt: new Date() }))
+                        : { ...(args.data ?? {}), updatedBy: cls.get('id'), updatedAt: new Date() }
                     return query(args)
                 }
             }
@@ -75,7 +71,7 @@ export const softDeleteExtension = (cls: ClsService) =>
                     const ctx = Prisma.getExtensionContext(this) as any
                     return await ctx.update({
                         ...args,
-                        data: { ...(args.data ?? {}), isDeleted: true, deletedBy: cls.get('userId'), deletedAt: new Date() }
+                        data: { ...(args.data ?? {}), isDeleted: true, deletedBy: cls.get('id'), deletedAt: new Date() }
                     })
                 },
                 async softDeleteMany<T>(
@@ -85,7 +81,7 @@ export const softDeleteExtension = (cls: ClsService) =>
                     const ctx = Prisma.getExtensionContext(this) as any
                     return await ctx.updateMany({
                         ...args,
-                        data: { ...(args.data ?? {}), isDeleted: true, deletedBy: cls.get('userId'), deletedAt: new Date() }
+                        data: { ...(args.data ?? {}), isDeleted: true, deletedBy: cls.get('id'), deletedAt: new Date() }
                     })
                 }
             }
