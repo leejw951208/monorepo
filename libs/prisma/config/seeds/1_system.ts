@@ -21,6 +21,8 @@ async function main() {
     })
 
     try {
+        console.log(`🚀 Seeding (env=${env}) 시작`)
+
         // FK 순서대로 삭제 (RolePermission -> AdminRole -> UserRole -> Permission -> Role)
         await prisma.$transaction(async (tx) => {
             await tx.rolePermission.deleteMany()
@@ -29,8 +31,12 @@ async function main() {
         })
 
         // 1) Role 보장 (ADMIN@ADMIN)
-        const role = await prisma.role.create({
+        const adminRole = await prisma.role.create({
             data: { name: 'ADMIN', owner: Owner.ADMIN, description: '시스템 관리자', createdBy: 1 }
+        })
+
+        await prisma.role.create({
+            data: { name: 'USER', owner: Owner.USER, description: '사용자', createdBy: 1 }
         })
 
         // 2) Permission upsert (scope, action 고유)
@@ -46,15 +52,17 @@ async function main() {
                 data: {
                     scope: p.scope,
                     action: p.action,
-                    createdBy: 1
-                }
-            })
-
-            await prisma.rolePermission.create({
-                data: {
-                    roleId: role.id,
-                    permissionId: perm.id,
-                    createdBy: 1
+                    createdBy: 1,
+                    rolePermissions: {
+                        createMany: {
+                            data: [
+                                {
+                                    roleId: adminRole.id,
+                                    createdBy: 1
+                                }
+                            ]
+                        }
+                    }
                 }
             })
         }

@@ -1,9 +1,19 @@
-import { AuthErrorType, BadRequestType, NotFoundType, PostErrorType, ServerErrorType, UserErrorType } from './error.type'
+import { AuthErrorType, BadRequestType, NotFoundType, SeedErrorType, ServerErrorType, UserErrorType } from './error.type'
 
 export interface IErrorCodes {
     errorCode: string
     status: number
     message: string
+}
+
+export const SEED_ERROR: {
+    [key in SeedErrorType]: IErrorCodes
+} = {
+    GENERAL: {
+        status: 500,
+        errorCode: 'SEED_ERROR_001',
+        message: '시드 실행 중 오류가 발생 하였습니다.'
+    }
 }
 
 export const AUTH_ERROR: {
@@ -43,16 +53,6 @@ export const USER_ERROR: {
         status: 404,
         errorCode: 'USER_ERROR_001',
         message: '회원 정보를 찾을 수 없습니다.'
-    }
-}
-
-export const POST_ERROR: {
-    [key in PostErrorType]: IErrorCodes
-} = {
-    NOT_FOUND: {
-        status: 404,
-        errorCode: 'POST_ERROR_001',
-        message: '게시글을 찾을 수 없습니다.'
     }
 }
 

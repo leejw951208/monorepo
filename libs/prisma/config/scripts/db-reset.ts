@@ -1,14 +1,12 @@
-#!/usr/bin/env node
+import { execSync } from 'node:child_process'
+import dotenv from 'dotenv'
+import { resolve } from 'node:path'
+import { createInterface } from 'node:readline/promises'
+import { stdin, stdout } from 'node:process'
 
-const { execSync } = require('child_process')
-const dotenv = require('dotenv')
-const path = require('path')
-const readline = require('node:readline/promises')
-const { stdin, stdout } = require('node:process')
-
-async function main() {
+async function main(): Promise<void> {
     // 환경 입력
-    const rl = readline.createInterface({ input: stdin, output: stdout })
+    const rl = createInterface({ input: stdin, output: stdout })
     const env = (await rl.question('환경 (local/dev): ')).trim()
     rl.close()
 
@@ -19,12 +17,12 @@ async function main() {
     }
 
     // .env 파일 로드
-    const envFilePath = path.resolve(process.cwd(), `./envs/.env.${env}`)
+    const envFilePath = resolve(process.cwd(), `./envs/.env.${env}`)
     dotenv.config({ path: envFilePath })
 
     try {
         console.log(`🚨 ${env} 환경 데이터베이스를 초기화합니다...`)
-        const schemaPath = `${path.resolve(process.cwd())}${process.env.PRISMA_SCHEMA_PATH}`
+        const schemaPath = `${resolve(process.cwd())}${process.env.PRISMA_SCHEMA_PATH}`
         execSync(`npx prisma migrate reset --force --schema=${schemaPath}`, { stdio: 'inherit' })
     } catch (error) {
         console.error('❌ DB 초기화 중 오류가 발생했습니다.')
@@ -32,4 +30,4 @@ async function main() {
     }
 }
 
-main()
+void main()
