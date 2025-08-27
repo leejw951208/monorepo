@@ -4,6 +4,8 @@ import { listUsersCursor, listUsersOffset } from '@apps/api/user/query/user.quer
 import { CursorPageResDto, OffsetPageResDto } from '@libs/common/dto/page-res.dto'
 import { PrismaService } from '@libs/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
+import { PrismaClient } from '@prisma/client'
+import { user } from '@prisma/client/sql'
 import { plainToInstance } from 'class-transformer'
 
 @Injectable()
@@ -18,5 +20,10 @@ export class UserService {
     async findUsersWithCursor(searchCondition: UserCursorPageReqDto): Promise<CursorPageResDto<UserResDto>> {
         const { items, nextId } = await listUsersCursor(this.prisma, searchCondition)
         return new CursorPageResDto(plainToInstance(UserResDto, items, { excludeExtraneousValues: true }), nextId)
+    }
+
+    async typedSql() {
+        const test = await this.prisma.client.$queryRawTyped(user())
+        console.log(test)
     }
 }

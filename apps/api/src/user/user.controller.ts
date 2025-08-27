@@ -33,4 +33,14 @@ export class UserController {
     async findUsersWithCursor(@Query() query: UserCursorPageReqDto): Promise<CursorPageResDto<UserResDto>> {
         return this.service.findUsersWithCursor(query)
     }
+
+    @ApiOperation({
+        summary: 'Typed SQL 테스트',
+        description: 'Typed SQL 테스트'
+    })
+    @Public()
+    @Get('typed-sql')
+    async test(): Promise<void> {
+        this.service.typedSql()
+    }
 }
