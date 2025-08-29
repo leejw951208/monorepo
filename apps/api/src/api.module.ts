@@ -3,7 +3,7 @@ import { ApiService } from '@apps/api/api.service'
 import { AuthModule } from '@apps/api/auth/auth.module'
 import { UserModule } from '@apps/api/user/user.module'
 import { winstonModuleAsyncOptions } from '@libs/common/config/winston.config'
-import { JwtGuard } from '@libs/common/guard/jwt.guard'
+import { JwtAccessGuard } from '@libs/common/guard/jwt-access.guard'
 import { CustomClsMiddleware } from '@libs/common/middleware/cls.middleware'
 import { LoggerMiddleware } from '@libs/common/middleware/logger.middleware'
 import { PrismaModule } from '@libs/prisma/prisma.module'
@@ -34,7 +34,7 @@ import * as path from 'path'
         UserModule
     ],
     controllers: [ApiController],
-    providers: [ApiService, { provide: APP_GUARD, useClass: JwtGuard }]
+    providers: [ApiService, { provide: APP_GUARD, useClass: JwtAccessGuard }]
 })
 export class ApiModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

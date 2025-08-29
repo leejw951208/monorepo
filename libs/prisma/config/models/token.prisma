@@ -20,6 +20,7 @@ model Token {
 
 model TokenJwt {
     id        Int       @id @default(autoincrement())
+    jti       String?   @map("jti") @db.Uuid
     tokenId   Int       @map("token_id")
     token     Token     @relation(fields: [tokenId], references: [id], onDelete: Cascade)
     createdAt DateTime  @default(now()) @map("created_at")

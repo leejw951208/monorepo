@@ -41,9 +41,9 @@ model Permission {
 model RolePermission {
     id           Int        @id @default(autoincrement())
     roleId       Int        @map("role_id")
-    role         Role       @relation(fields: [roleId], references: [id])
+    role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
     permissionId Int        @map("permission_id")
-    permission   Permission @relation(fields: [permissionId], references: [id])
+    permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
     createdAt    DateTime   @default(now()) @map("created_at")
     createdBy    Int        @map("created_by")
     updatedAt    DateTime?  @updatedAt @map("updated_at")

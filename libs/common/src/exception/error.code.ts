@@ -21,27 +21,42 @@ export const AUTH_ERROR: {
 } = {
     MISSING_ACCESS_TOKEN: {
         status: 401,
-        errorCode: 'AUTH_ERROR_000',
+        errorCode: 'AUTH_ERROR_001',
         message: '인증 토큰을 찾을 수 없습니다.'
+    },
+    MISSING_REFRESH_TOKEN: {
+        status: 401,
+        errorCode: 'AUTH_ERROR_002',
+        message: '리프레시 토큰을 찾을 수 없습니다.'
     },
     INVALID_ACCESS_TOKEN: {
         status: 401,
-        errorCode: 'AUTH_ERROR_001',
+        errorCode: 'AUTH_ERROR_003',
         message: '유효하지 않은 인증 토큰입니다.'
+    },
+    EXPIRED_ACCESS_TOKEN: {
+        status: 401,
+        errorCode: 'AUTH_ERROR_004',
+        message: '인증 토큰이 만료되었습니다.'
+    },
+    EXPIRED_REFRESH_TOKEN: {
+        status: 401,
+        errorCode: 'AUTH_ERROR_005',
+        message: '리프레시 토큰이 만료되었습니다.'
     },
     INVALID_REFRESH_TOKEN: {
         status: 401,
-        errorCode: 'AUTH_ERROR_002',
+        errorCode: 'AUTH_ERROR_006',
         message: '유효하지 않은 리프레시 토큰입니다.'
     },
     PASSWORD_NOT_MATCHED: {
         status: 401,
-        errorCode: 'AUTH_ERROR_003',
+        errorCode: 'AUTH_ERROR_007',
         message: '비밀번호가 일치하지 않습니다.'
     },
     RESOURCE_ACCESS_DENIED: {
         status: 403,
-        errorCode: 'AUTH_ERROR_004',
+        errorCode: 'AUTH_ERROR_008',
         message: '리소스 접근 권한이 없습니다.'
     }
 }
@@ -53,6 +68,16 @@ export const USER_ERROR: {
         status: 404,
         errorCode: 'USER_ERROR_001',
         message: '회원 정보를 찾을 수 없습니다.'
+    },
+    ALREADY_EXISTS_LOGIN_ID: {
+        status: 400,
+        errorCode: 'USER_ERROR_002',
+        message: '이미 존재하는 로그인 아이디입니다.'
+    },
+    ALREADY_EXISTS_EMAIL: {
+        status: 400,
+        errorCode: 'USER_ERROR_003',
+        message: '이미 존재하는 이메일입니다.'
     }
 }
 

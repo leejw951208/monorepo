@@ -16,12 +16,15 @@ async function run() {
 
     const seedsDir = path.resolve(process.cwd(), 'libs/prisma/config/seeds')
 
-    // 실행 순서: 파일명 알파벳 순. 필요시 접두 숫자(001_*.ts)로 제어
+    // 실행 순서: 파일명 접두 숫자 오름차순 (예: 1_*.ts → 2_*.ts → 10_*.ts)
     const entries = fs
         .readdirSync(seedsDir)
-        .filter((f) => f.endsWith('.ts'))
-        .filter((f) => f !== 'run.ts' && !f.endsWith('.d.ts'))
-        .sort()
+        .filter((f) => /^\d+_.*\.ts$/.test(f))
+        .sort((a, b) => {
+            const na = Number(a.slice(0, a.indexOf('_')))
+            const nb = Number(b.slice(0, b.indexOf('_')))
+            return na - nb || a.localeCompare(b)
+        })
 
     if (entries.length === 0) {
         console.log('⚠️ 실행할 시드가 없습니다.')

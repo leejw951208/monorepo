@@ -23,9 +23,9 @@ model User {
 model UserRole {
     id        Int       @id @default(autoincrement())
     userId    Int       @map("user_id")
-    user      User      @relation(fields: [userId], references: [id])
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     roleId    Int       @map("role_id")
-    role      Role      @relation(fields: [roleId], references: [id])
+    role      Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
     createdAt DateTime  @default(now()) @map("created_at")
     createdBy Int       @map("created_by")
     updatedAt DateTime? @updatedAt @map("updated_at")

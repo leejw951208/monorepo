@@ -5,6 +5,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { BaseException } from '../exception/base.exception'
 import { AUTH_ERROR } from '../exception/error.code'
+import { Request } from 'express'
 
 /**
  * JWT 인증 전략 - passport-jwt를 사용한 JWT 토큰 기반 인증
@@ -27,16 +28,18 @@ import { AUTH_ERROR } from '../exception/error.code'
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(private readonly configService: ConfigService) {
         super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: ExtractJwt.fromExtractors([
+                ExtractJwt.fromAuthHeaderAsBearerToken(), // 앱
+                (req: Request) => req?.cookies?.refreshToken // 웹
+            ]),
             ignoreExpiration: false,
             secretOrKey: configService.get<string>('JWT_SECRET_KEY')!
         })
     }
 
     async validate(payload: TokenPayload) {
-        if (payload.type !== 'ac' || payload.issuer !== 'monorepo') {
-            throw new BaseException(AUTH_ERROR.INVALID_ACCESS_TOKEN, this.constructor.name)
-        }
-        return { id: payload.id }
+        // 토큰 발급자 검증
+        if (payload.issuer !== 'monorepo') throw new BaseException(AUTH_ERROR.INVALID_ACCESS_TOKEN, this.constructor.name)
+        return payload
     }
 }

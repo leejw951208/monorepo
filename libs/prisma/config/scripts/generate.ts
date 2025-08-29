@@ -22,12 +22,12 @@ async function main(): Promise<void> {
 
     // 4) 마이그레이션 파일 생성
     try {
-        console.log(`📝 ${env} 환경에서 Typed SQL 설정을 진행합니다.`)
+        console.log(`📝 ${env} 환경에서 Prisma 설정 업데이트를 진행합니다.`)
         const schemaPath = `${resolve(process.cwd())}${process.env.PRISMA_SCHEMA_PATH}`
-        execSync(`npx prisma generate --sql --schema=${schemaPath}`, { stdio: 'inherit' })
-        console.log('✅ Typed SQL 설정이 완료되었습니다.')
+        execSync(`npx prisma generate --schema=${schemaPath}`, { stdio: 'inherit' })
+        console.log('✅ Prisma 설정 업데이트가 완료되었습니다.')
     } catch (error) {
-        console.error('❌ Typed SQL 설정 중 오류가 발생했습니다.')
+        console.error('❌ Prisma 설정 업데이트 중 오류가 발생했습니다.')
         process.exit(1)
     }
 }

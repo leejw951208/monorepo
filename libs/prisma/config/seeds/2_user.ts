@@ -30,8 +30,7 @@ async function main() {
 
         // FK 순서대로 삭제 (UserRole -> User)
         await prisma.$transaction(async (tx) => {
-            await tx.userRole.deleteMany()
-            await tx.user.deleteMany()
+            await tx.$executeRaw`TRUNCATE TABLE "base"."user_role", "base"."user" RESTART IDENTITY CASCADE`
         })
 
         // 1) User Role 조회
@@ -45,7 +44,7 @@ async function main() {
         await prisma.user.create({
             data: {
                 loginId: 'testuser',
-                password: await bcrypt.hash('password1234', saltRounds),
+                password: await bcrypt.hash('user1234!@', saltRounds),
                 email: 'testuser@example.com',
                 name: '테스트 사용자',
                 phone: '010-0000-0000',

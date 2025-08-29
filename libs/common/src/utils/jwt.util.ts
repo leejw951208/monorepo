@@ -9,8 +9,9 @@ type Aud = 'admin' | 'api'
 
 export type TokenPayload = {
     id?: number
-    type?: string
+    type?: 'ac' | 're'
     aud?: Aud
+    jti?: string
     issuer?: string
 }
 
@@ -29,21 +30,22 @@ export class JwtUtil {
         this.jwtSecretKey = this.configService.get<string>('JWT_SECRET_KEY')!
     }
 
-    async createAccessToken(model: User | Admin, aud: Aud): Promise<string> {
-        const payload = this.createTokenPayload(model, aud, 'ac')
+    async createAccessToken(model: User | Admin, aud: Aud, jti: string): Promise<string> {
+        const payload = this.createTokenPayload(model, aud, 'ac', jti)
         return await this.signToken(payload, this.accessTokenExpiresIn)
     }
 
-    async createRefreshToken(model: User | Admin, aud: Aud): Promise<string> {
-        const payload = this.createTokenPayload(model, aud, 're')
+    async createRefreshToken(model: User | Admin, aud: Aud, jti: string): Promise<string> {
+        const payload = this.createTokenPayload(model, aud, 're', jti)
         return await this.signToken(payload, this.refreshTokenExpiresIn)
     }
 
-    createTokenPayload(model: User | Admin, aud: Aud, type: 'ac' | 're'): TokenPayload {
+    createTokenPayload(model: User | Admin, aud: Aud, type: 'ac' | 're', jti: string): TokenPayload {
         return {
             id: model.id,
             type,
             aud,
+            jti,
             issuer: 'monorepo'
         } as TokenPayload
     }

@@ -25,9 +25,7 @@ async function main() {
 
         // FK 순서대로 삭제 (RolePermission -> AdminRole -> UserRole -> Permission -> Role)
         await prisma.$transaction(async (tx) => {
-            await tx.rolePermission.deleteMany()
-            await tx.permission.deleteMany()
-            await tx.role.deleteMany()
+            await tx.$executeRaw`TRUNCATE TABLE "base"."role_permission", "base"."role", "base"."permission" RESTART IDENTITY CASCADE`
         })
 
         // 1) Role 보장 (ADMIN@ADMIN)
