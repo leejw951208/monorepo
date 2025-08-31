@@ -34,7 +34,7 @@ async function main() {
         })
 
         await prisma.role.create({
-            data: { name: 'USER', owner: Owner.USER, description: '사용자', createdBy: 1 }
+            data: { name: 'USER', owner: Owner.USER, description: '회원', createdBy: 1 }
         })
 
         // 2) Permission upsert (scope, action 고유)

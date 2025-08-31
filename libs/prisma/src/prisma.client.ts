@@ -1,4 +1,4 @@
-import { createExtension, filterSoftDeletedExtension, softDeleteExtension, updateExtension } from '@libs/prisma/prisma-extension'
+import { createExtension, findExtension, softDeleteExtension, updateExtension } from '@libs/prisma/prisma-extension'
 import { ConfigService } from '@nestjs/config'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { ClsService } from 'nestjs-cls'
@@ -14,9 +14,5 @@ export const customPrismaClient = (config: ConfigService, cls: ClsService, logge
         logger.debug(`${e.query}: ${e.params}`)
     })
 
-    return client
-        .$extends(filterSoftDeletedExtension)
-        .$extends(createExtension(cls))
-        .$extends(updateExtension(cls))
-        .$extends(softDeleteExtension(cls))
+    return client.$extends(findExtension).$extends(createExtension(cls)).$extends(updateExtension(cls)).$extends(softDeleteExtension(cls))
 }

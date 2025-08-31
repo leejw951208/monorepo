@@ -2,8 +2,8 @@ import { Public } from '@libs/common/decorator/public.decorator'
 import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR } from '@libs/common/exception/error.code'
 import { JwtRefreshGuard } from '@libs/common/guard/jwt-refresh.guard'
-import { Body, Controller, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { Client } from '@prisma/client'
 import { Request, Response } from 'express'
 import { AuthService } from './auth.service'
@@ -27,7 +27,7 @@ export class AuthController {
     @ApiOperation({ summary: '회원가입' })
     @ApiQuery({ name: 'client', enum: Client })
     @ApiBody({ type: SignupRequestDto })
-    @ApiResponse({ status: HttpStatus.CREATED })
+    @ApiCreatedResponse()
     @Public()
     @Post('signup')
     async signup(@Body() reqDto: SignupRequestDto): Promise<void> {
@@ -39,7 +39,7 @@ export class AuthController {
         description: '리프레시 토큰은 무조건 쿠키에 저장하고, 앱은 쿠키에 저장된 리프레시 토큰을 읽어 필요시 헤더로 전달'
     })
     @ApiBody({ type: SigninRequestDto })
-    @ApiResponse({ status: HttpStatus.OK, type: SigninResponseDto })
+    @ApiOkResponse({ type: SigninResponseDto })
     @Public()
     @Post('signin')
     async signin(@Body() reqDto: SigninRequestDto, @Res({ passthrough: true }) res: Response): Promise<SigninResponseDto> {
@@ -54,7 +54,7 @@ export class AuthController {
         description:
             '웹: 서버에서 쿠키에 저장된 리프레시 토큰 사용 / 앱: 헤더에 리프레시 토큰을 담아서 전달하고, 서버에서 헤더를 파싱하여 사용'
     })
-    @ApiResponse({ status: HttpStatus.OK })
+    @ApiOkResponse()
     @Public()
     @UseGuards(JwtRefreshGuard)
     @Post('signout')
@@ -70,7 +70,7 @@ export class AuthController {
             '웹: 서버에서 쿠키에 저장된 리프레시 토큰 사용 / 앱: 헤더에 리프레시 토큰을 담아서 전달하고, 서버에서 헤더를 파싱하여 사용'
     })
     @ApiCookieAuth('refreshToken')
-    @ApiResponse({ status: HttpStatus.OK, type: RefreshTokenResponseDto })
+    @ApiOkResponse({ type: RefreshTokenResponseDto })
     @Public()
     @UseGuards(JwtRefreshGuard)
     @Post('token/refresh')

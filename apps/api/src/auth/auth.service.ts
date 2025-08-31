@@ -47,7 +47,7 @@ export class AuthService {
     }
 
     async signin(reqDto: SigninRequestDto): Promise<{ resDto: SigninResponseDto; refreshToken: string }> {
-        // 유저 조회
+        // 회원 조회
         const foundUser = await this.prisma.client.user.findFirst({ where: { loginId: reqDto.loginId } })
         if (!foundUser) throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
 
@@ -93,7 +93,7 @@ export class AuthService {
         // 토큰 검증 및 페이로드 추출
         const payload = await this.jwtUtil.verify(refreshToken, 're')
 
-        // 사용자 정보 조회
+        // 회원 정보 조회
         const foundUser = await this.prisma.client.user.findFirst({ where: { id: payload.id } })
         if (!foundUser) throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
 
@@ -114,7 +114,7 @@ export class AuthService {
         // 토큰 검증 및 페이로드 추출
         const payload = await this.jwtUtil.verify(refreshToken, 're')
 
-        // 사용자 정보 조회
+        // 회원 정보 조회
         const foundUser = await this.prisma.client.user.findFirst({ where: { id: payload.id } })
         if (!foundUser) throw new BaseException(USER_ERROR.NOT_FOUND, this.constructor.name)
 

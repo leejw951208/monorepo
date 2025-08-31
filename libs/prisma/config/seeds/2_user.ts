@@ -46,8 +46,8 @@ async function main() {
                 loginId: 'testuser',
                 password: await bcrypt.hash('user1234!@', saltRounds),
                 email: 'testuser@example.com',
-                name: '테스트 사용자',
-                phone: '010-0000-0000',
+                name: '테스터',
+                phone: '01011111111',
                 createdBy: 1,
                 userRoles: {
                     create: {

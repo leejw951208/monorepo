@@ -17,7 +17,7 @@ import { Request } from 'express'
  * 4. JWT_SECRET_KEY로 토큰 검증 (서명, 만료시간)
  * 5. 토큰이 유효하면 페이로드를 validate() 메서드에 전달
  * 6. validate()에서 추가 검증 수행 (토큰 타입, 키 검증)
- * 7. 검증 성공시 사용자 PK 반환, 실패시 예외 발생
+ * 7. 검증 성공시 회원 PK 반환, 실패시 예외 발생
  *
  * super() 호출 이유:
  * - jwtFromRequest: Bearer 토큰에서 JWT 추출 방식 설정

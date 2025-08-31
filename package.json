@@ -11,6 +11,7 @@
         "start": "NODE_ENV=local nest start --watch",
         "start:debug": "nest start --debug --watch",
         "db:generate": "tsx libs/prisma/config/scripts/generate.ts",
+        "db:generate:typed-sql": "tsx libs/prisma/config/scripts/generate-typed-sql.ts",
         "db:migrate": "tsx libs/prisma/config/scripts/migrate.ts",
         "db:migrate:create": "tsx libs/prisma/config/scripts/migrate-create.ts",
         "db:reset": "tsx libs/prisma/config/scripts/db-reset.ts",
@@ -24,6 +25,8 @@
         "test:e2e": "jest --config ./apps/monorepo/test/jest-e2e.json"
     },
     "dependencies": {
+        "@keyv/redis": "^5.1.1",
+        "@nestjs/cache-manager": "^3.0.1",
         "@nestjs/common": "^11.0.1",
         "@nestjs/config": "^4.0.2",
         "@nestjs/core": "^11.0.1",
@@ -33,6 +36,7 @@
         "@nestjs/swagger": "^11.2.0",
         "@prisma/client": "^6.15.0",
         "bcrypt": "^6.0.0",
+        "cache-manager": "^7.2.0",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.2",
         "cookie-parser": "^1.4.7",
@@ -53,6 +57,7 @@
         "@nestjs/schematics": "^11.0.0",
         "@nestjs/testing": "^11.0.1",
         "@types/bcrypt": "^6.0.0",
+        "@types/cache-manager": "^5.0.0",
         "@types/cookie-parser": "^1.4.9",
         "@types/express": "^5.0.0",
         "@types/jest": "^30.0.0",

@@ -6,6 +6,7 @@ import { NestFactory, Reflector } from '@nestjs/core'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import { ApiModule } from './api.module'
 import cookieParser from 'cookie-parser'
+import { SuccessStatusInterceptor } from '@libs/common/interceptor/success-status-interceptor/success-status-interceptor.interceptor'
 
 async function bootstrap() {
     const app = await NestFactory.create(ApiModule)
@@ -29,6 +30,8 @@ async function bootstrap() {
     app.enableShutdownHooks()
 
     app.use(cookieParser())
+
+    app.useGlobalInterceptors(new SuccessStatusInterceptor())
 
     // 스웨거 설정
     setupSwagger(app)

@@ -4,22 +4,23 @@ import { ClsService } from 'nestjs-cls'
 const findOperations = ['findFirst', 'findFirstOrThrow', 'findMany', 'count', 'aggregate', 'groupBy'] as const
 type FindOperation = (typeof findOperations)[number]
 
+const orderableOperations = new Set<FindOperation>(['findFirst', 'findFirstOrThrow', 'findMany'])
+
 const mergeWhere = <T extends object | undefined>(where: T): any => {
     if (!where) return { isDeleted: false }
     return { AND: [where, { isDeleted: false }] }
 }
 
-export const filterSoftDeletedExtension = Prisma.defineExtension({
+export const findExtension = Prisma.defineExtension({
     query: {
         $allModels: {
             async $allOperations({ operation, args, query }: { operation: string; args: any; query: (a: any) => any }) {
-                if (args && 'withDeleted' in args) {
-                    delete args.withDeleted
-                    return query(args)
-                }
+                if (args && 'withDeleted' in args) delete args.withDeleted
+
                 if (findOperations.includes(operation as FindOperation)) {
                     args ??= {}
                     args.where = mergeWhere(args.where)
+                    if (!args.orderBy && orderableOperations.has(operation as FindOperation)) args.orderBy = [{ id: 'desc' }]
                 }
                 return query(args)
             }
