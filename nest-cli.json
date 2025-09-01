@@ -7,22 +7,22 @@
     },
     "monorepo": true,
     "projects": {
-        "admin": {
+        "admin-app": {
             "type": "application",
-            "root": "apps/admin",
+            "root": "apps/admin-app",
             "entryFile": "main",
-            "sourceRoot": "apps/admin/src",
+            "sourceRoot": "apps/admin-app/src",
             "compilerOptions": {
-                "tsConfigPath": "apps/admin/tsconfig.app.json"
+                "tsConfigPath": "apps/admin-app/tsconfig.app.json"
             }
         },
-        "api": {
+        "user-app": {
             "type": "application",
-            "root": "apps/api",
+            "root": "apps/user-app",
             "entryFile": "main",
-            "sourceRoot": "apps/api/src",
+            "sourceRoot": "apps/user-app/src",
             "compilerOptions": {
-                "tsConfigPath": "apps/api/tsconfig.app.json"
+                "tsConfigPath": "apps/user-app/tsconfig.app.json"
             }
         },
         "common": {
@@ -34,15 +34,6 @@
                 "tsConfigPath": "libs/common/tsconfig.lib.json"
             }
         },
-        "prisma": {
-            "type": "library",
-            "root": "libs/prisma",
-            "entryFile": "index",
-            "sourceRoot": "libs/prisma/src",
-            "compilerOptions": {
-                "tsConfigPath": "libs/prisma/tsconfig.lib.json"
-            }
-        },
         "models": {
             "type": "library",
             "root": "libs/models",
@@ -50,6 +41,15 @@
             "sourceRoot": "libs/models/src",
             "compilerOptions": {
                 "tsConfigPath": "libs/models/tsconfig.lib.json"
+            }
+        },
+        "prisma": {
+            "type": "library",
+            "root": "libs/prisma",
+            "entryFile": "index",
+            "sourceRoot": "libs/prisma/src",
+            "compilerOptions": {
+                "tsConfigPath": "libs/prisma/tsconfig.lib.json"
             }
         }
     }

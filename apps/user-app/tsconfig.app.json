@@ -1,9 +1,8 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "composite": true,
-        "declaration": true,
-        "outDir": "../../dist/libs/common"
+        "declaration": false,
+        "outDir": "../../dist/apps/user-app"
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
