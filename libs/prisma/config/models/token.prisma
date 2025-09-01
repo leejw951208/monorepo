@@ -12,17 +12,17 @@ model Token {
     deletedAt DateTime? @map("deleted_at")
     deletedBy Int?      @map("deleted_by")
 
-    tokenJwt TokenJwt?
+    tokenFcms TokenFcm[]
 
     @@map("token")
     @@schema("base")
 }
 
-model TokenJwt {
+model TokenFcm {
     id        Int       @id @default(autoincrement())
-    jti       String?   @map("jti") @db.Uuid
     tokenId   Int       @map("token_id")
     token     Token     @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+    platform  Platform  @map("platform")
     createdAt DateTime  @default(now()) @map("created_at")
     createdBy Int       @map("created_by")
     updatedAt DateTime? @updatedAt @map("updated_at")
@@ -31,7 +31,6 @@ model TokenJwt {
     deletedAt DateTime? @map("deleted_at")
     deletedBy Int?      @map("deleted_by")
 
-    @@unique([tokenId])
-    @@map("token_jwt")
+    @@map("token_fcm")
     @@schema("base")
 }

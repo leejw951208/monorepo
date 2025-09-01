@@ -13,13 +13,6 @@ enum Owner {
     @@schema("public")
 }
 
-enum JwtType {
-    ACCESS
-    REFRESH
-
-    @@schema("public")
-}
-
 enum Platform {
     WEB
     ANDROID
@@ -31,13 +24,6 @@ enum Platform {
 enum TokenType {
     JWT
     FCM
-
-    @@schema("public")
-}
-
-enum Client {
-    WEB
-    APP
 
     @@schema("public")
 }

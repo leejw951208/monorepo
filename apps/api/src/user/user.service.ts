@@ -1,7 +1,3 @@
-import { UserCursorPageReqDto, UserOffsetPageReqDto } from '@apps/api/user/dto/user-page-req.dto'
-import { UserResDto } from '@apps/api/user/dto/user-res.dto'
-import { UserUpdateDto } from '@apps/api/user/dto/user-update.dto'
-import { listUsersCursor, listUsersOffset } from '@apps/api/user/query/user.query'
 import { CursorPageResDto, OffsetPageResDto } from '@libs/common/dto/page-res.dto'
 import { BaseException } from '@libs/common/exception/base.exception'
 import { USER_ERROR } from '@libs/common/exception/error.code'
@@ -11,6 +7,10 @@ import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import { user } from '@prisma/client/sql'
 import { plainToInstance } from 'class-transformer'
+import { UserResDto } from './dto/user-res.dto'
+import { UserUpdateDto } from './dto/user-update.dto'
+import { UserCursorPageReqDto, UserOffsetPageReqDto } from './dto/user-page-req.dto'
+import { listUsersCursor, listUsersOffset } from './query/user.query'
 
 @Injectable()
 export class UserService {
@@ -21,11 +21,6 @@ export class UserService {
 
     async findMe(payload: TokenPayload): Promise<UserResDto> {
         const foundUser = await this.prisma.client.user.findFirst({ where: { id: payload.id } })
-        const cacheUser = await this.cacheManager.get('user')
-        if (!cacheUser) {
-            await this.cacheManager.set('user', foundUser, 30 * 1000)
-        }
-        console.log(cacheUser)
         return plainToInstance(UserResDto, foundUser, { excludeExtraneousValues: true })
     }
 

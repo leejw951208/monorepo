@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { BaseException } from '../exception/base.exception'
-import { AUTH_ERROR, SERVER_ERROR } from '../exception/error.code'
+import { AUTH_ERROR } from '../exception/error.code'
 
 @Injectable()
-export class JwtRefreshGuard extends AuthGuard('jwt') {
+export class JwtRefreshGuard extends AuthGuard('jwt-refresh') {
     handleRequest(err: any, payload: any, info: any) {
-        if (err) throw new BaseException(SERVER_ERROR.GENERAL, this.constructor.name)
+        if (err) throw new BaseException(AUTH_ERROR.INVALID_REFRESH_TOKEN, this.constructor.name)
 
         const name = info?.name as string | undefined
         if (name === 'TokenExpiredError') throw new BaseException(AUTH_ERROR.EXPIRED_REFRESH_TOKEN, this.constructor.name)

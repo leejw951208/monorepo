@@ -1,8 +1,4 @@
-import { ApiController } from '@apps/api/api.controller'
-import { ApiService } from '@apps/api/api.service'
-import { AuthModule } from '@apps/api/auth/auth.module'
-import { UserModule } from '@apps/api/user/user.module'
-import KeyvRedis, { Keyv } from '@keyv/redis'
+import KeyvRedis from '@keyv/redis'
 import { winstonModuleAsyncOptions } from '@libs/common/config/winston.config'
 import { JwtAccessGuard } from '@libs/common/guard/jwt-access.guard'
 import { CustomClsMiddleware } from '@libs/common/middleware/cls.middleware'
@@ -10,11 +6,15 @@ import { LoggerMiddleware } from '@libs/common/middleware/logger.middleware'
 import { PrismaModule } from '@libs/prisma/prisma.module'
 import { CacheModule } from '@nestjs/cache-manager'
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { WinstonModule } from 'nest-winston'
 import { ClsModule } from 'nestjs-cls'
 import * as path from 'path'
+import { ApiController } from './api.controller'
+import { ApiService } from './api.service'
+import { AuthModule } from './auth/auth.module'
+import { UserModule } from './user/user.module'
 
 @Module({
     imports: [
@@ -28,8 +28,9 @@ import * as path from 'path'
         }),
         CacheModule.registerAsync({
             isGlobal: true,
-            useFactory: async () => ({
-                stores: [new KeyvRedis('redis://:1234@localhost:6379')]
+            inject: [ConfigService],
+            useFactory: async (configService: ConfigService) => ({
+                stores: [new KeyvRedis(configService.get<string>('REDIS_URL'))]
             })
         }),
         ClsModule.forRoot({

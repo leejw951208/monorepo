@@ -4,19 +4,17 @@ import { AuthGuard } from '@nestjs/passport'
 import { Observable } from 'rxjs'
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator'
 import { BaseException } from '../exception/base.exception'
-import { AUTH_ERROR, SERVER_ERROR } from '../exception/error.code'
+import { AUTH_ERROR } from '../exception/error.code'
 
 @Injectable()
-export class JwtAccessGuard extends AuthGuard('jwt') {
+export class JwtAccessGuard extends AuthGuard('jwt-access') {
     constructor(private reflector: Reflector) {
         super()
     }
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         // @Public() 데코레이터가 있는지 확인하고 있으면 검증 예외
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()])
-        if (isPublic) {
-            return true
-        }
+        if (isPublic) return true
 
         // JWT Strategy로 토큰 검증을 위임
         return super.canActivate(context)
@@ -30,7 +28,7 @@ export class JwtAccessGuard extends AuthGuard('jwt') {
      * @returns
      */
     handleRequest(err: any, payload: any, info: any) {
-        if (err) throw new BaseException(SERVER_ERROR.GENERAL, this.constructor.name)
+        if (err) throw new BaseException(AUTH_ERROR.INVALID_ACCESS_TOKEN, this.constructor.name)
 
         const name = info?.name as string | undefined
         if (name === 'TokenExpiredError') throw new BaseException(AUTH_ERROR.EXPIRED_ACCESS_TOKEN, this.constructor.name)

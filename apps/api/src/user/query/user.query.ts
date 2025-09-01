@@ -1,6 +1,6 @@
-import { UserCursorPageReqDto, UserOffsetPageReqDto } from '@apps/api/user/dto/user-page-req.dto'
 import { UserModel } from '@libs/models/user/user.model'
 import { PrismaService } from '@libs/prisma/prisma.service'
+import { UserCursorPageReqDto, UserOffsetPageReqDto } from '../dto/user-page-req.dto'
 
 export type UserOffsetResult = {
     items: UserModel[]

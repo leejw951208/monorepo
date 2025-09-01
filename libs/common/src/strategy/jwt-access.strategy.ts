@@ -25,13 +25,10 @@ import { Request } from 'express'
  * - secretOrKey: 토큰 서명 검증에 사용할 비밀키 설정
  */
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtAccessStrategy extends PassportStrategy(Strategy, 'jwt-access') {
     constructor(private readonly configService: ConfigService) {
         super({
-            jwtFromRequest: ExtractJwt.fromExtractors([
-                ExtractJwt.fromAuthHeaderAsBearerToken(), // 앱
-                (req: Request) => req?.cookies?.refreshToken // 웹
-            ]),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
             secretOrKey: configService.get<string>('JWT_SECRET_KEY')!
         })

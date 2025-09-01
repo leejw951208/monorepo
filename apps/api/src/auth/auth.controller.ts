@@ -3,19 +3,13 @@ import { BaseException } from '@libs/common/exception/base.exception'
 import { AUTH_ERROR } from '@libs/common/exception/error.code'
 import { JwtRefreshGuard } from '@libs/common/guard/jwt-refresh.guard'
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { Client } from '@prisma/client'
+import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Request, Response } from 'express'
 import { AuthService } from './auth.service'
 import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto'
 import { SigninRequestDto } from './dto/signin-request.dto'
 import { SigninResponseDto } from './dto/signin-response.dto'
 import { SignupRequestDto } from './dto/signup-request.dto'
-
-type ExtractRefreshToken = {
-    refreshToken: string
-    client: 'web' | 'app'
-}
 
 const path = 'auth'
 @ApiTags(path)
@@ -25,9 +19,8 @@ export class AuthController {
     constructor(private readonly service: AuthService) {}
 
     @ApiOperation({ summary: '회원가입' })
-    @ApiQuery({ name: 'client', enum: Client })
     @ApiBody({ type: SignupRequestDto })
-    @ApiCreatedResponse()
+    @ApiOkResponse()
     @Public()
     @Post('signup')
     async signup(@Body() reqDto: SignupRequestDto): Promise<void> {
@@ -55,11 +48,9 @@ export class AuthController {
             '웹: 서버에서 쿠키에 저장된 리프레시 토큰 사용 / 앱: 헤더에 리프레시 토큰을 담아서 전달하고, 서버에서 헤더를 파싱하여 사용'
     })
     @ApiOkResponse()
-    @Public()
-    @UseGuards(JwtRefreshGuard)
     @Post('signout')
     async signout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
-        const { refreshToken } = this.extractRefreshToken(req)
+        const refreshToken = this.extractRefreshToken(req)
         this.removeRefreshToken(res)
         return await this.service.signout(refreshToken)
     }
@@ -69,13 +60,12 @@ export class AuthController {
         description:
             '웹: 서버에서 쿠키에 저장된 리프레시 토큰 사용 / 앱: 헤더에 리프레시 토큰을 담아서 전달하고, 서버에서 헤더를 파싱하여 사용'
     })
-    @ApiCookieAuth('refreshToken')
     @ApiOkResponse({ type: RefreshTokenResponseDto })
-    @Public()
     @UseGuards(JwtRefreshGuard)
+    @Public()
     @Post('token/refresh')
     async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<RefreshTokenResponseDto> {
-        const { refreshToken } = this.extractRefreshToken(req)
+        const refreshToken = this.extractRefreshToken(req)
         const result = await this.service.refreshToken(refreshToken)
         this.setRefreshToken(res, result.refreshToken)
         return result.resDto
@@ -100,13 +90,13 @@ export class AuthController {
         })
     }
 
-    private extractRefreshToken(req: Request): ExtractRefreshToken {
+    private extractRefreshToken(req: Request): string {
         const fromCookie = req.cookies?.refreshToken as string | undefined
-        if (fromCookie) return { refreshToken: fromCookie, client: 'web' }
+        if (fromCookie) return fromCookie
 
         const auth = req.headers.authorization
         const refreshToken = auth?.startsWith('Bearer ') ? auth.slice(7) : undefined
-        if (refreshToken) return { refreshToken, client: 'app' }
+        if (refreshToken) return refreshToken
 
         throw new BaseException(AUTH_ERROR.MISSING_REFRESH_TOKEN, this.constructor.name)
     }
